@@ -5,8 +5,11 @@ const INDEX_NAME = 'compliance-embeddings';
 /**
  * Metadata schema for regulatory text chunks stored in Pinecone.
  * Enables filtering by jurisdiction, source, and regulatory context.
+ *
+ * Note: Using type alias instead of interface to avoid index signature conflicts
+ * with optional properties.
  */
-export interface ChunkMetadata extends RecordMetadata {
+export type ChunkMetadata = RecordMetadata & {
   /** Unique identifier for the regulatory text chunk */
   chunkId: string;
 
@@ -25,8 +28,8 @@ export interface ChunkMetadata extends RecordMetadata {
   /** Citation reference (e.g., '21 CFR 117.5', 'Tex. Health & Safety Code § 431.002') */
   citation: string;
 
-  /** Section title or heading */
-  title?: string | null;
+  /** Section title or heading (optional) */
+  title?: string;
 
   /** Position of chunk within source document (0-indexed) */
   chunkIndex: number;
@@ -34,15 +37,15 @@ export interface ChunkMetadata extends RecordMetadata {
   /** Total number of chunks in source document */
   totalChunks: number;
 
-  /** Regulatory topic/category (e.g., 'food-safety', 'building-codes') */
-  category?: string | null;
+  /** Regulatory topic/category (e.g., 'food-safety', 'building-codes') (optional) */
+  category?: string;
 
   /** ISO 8601 timestamp of when text was indexed */
   indexedAt: string;
 
-  /** ISO 8601 timestamp of last known update to source */
-  lastUpdated?: string | null;
-}
+  /** ISO 8601 timestamp of last known update to source (optional) */
+  lastUpdated?: string;
+};
 
 /**
  * Initialize Pinecone client with API key from environment.
