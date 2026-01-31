@@ -51,6 +51,9 @@ importers:
       '@compliance-iq/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@pinecone-database/pinecone':
+        specifier: ^6.1.4
+        version: 6.1.4
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250110.0
