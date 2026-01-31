@@ -9,10 +9,10 @@
 
 ## Overview
 
-This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer by layer (federal → state → county → municipal), then the query/RAG system, then the application. Each phase delivers a complete, verifiable capability that unblocks the next phase.
+This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer by layer (federal -> state -> county -> municipal), then the query/RAG system, then the application. Each phase delivers a complete, verifiable capability that unblocks the next phase.
 
 **Delivery Strategy:**
-- Phases 1-6: Data pipelines (foundation → federal → state → county → municipal → processing)
+- Phases 1-6: Data pipelines (foundation -> federal -> state -> county -> municipal -> processing)
 - Phases 7-8: Query engine and application layer
 - Phases 9-10: Integration polish and pilot readiness
 
@@ -24,7 +24,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 
 | Phase | Goal | Requirements | Dependencies |
 |-------|------|--------------|--------------|
-| 1 - Foundation | Project infrastructure and services operational | — | None |
+| 1 - Foundation | Project infrastructure and services operational | -- | None |
 | 2 - Federal Data | Federal regulations indexed and searchable | DATA-01, DATA-07, DATA-08, DATA-09, DATA-10, COV-01 | Phase 1 |
 | 3 - State Data | Texas state law and regulations indexed | DATA-02, DATA-03, COV-02, COV-03 | Phase 2 |
 | 4 - County Data | Top 10 Texas county ordinances indexed | DATA-06, COV-04 | Phase 3 |
@@ -33,7 +33,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 | 7 - Query Pipeline | RAG system returns relevant regulatory text with citations | QUERY-01, QUERY-02, QUERY-03, QUERY-04, QUERY-06, QUERY-07 | Phase 6 |
 | 8 - Application | Users can authenticate and ask compliance questions | APP-01, APP-02, APP-03, APP-04, APP-06 | Phase 7 |
 | 9 - Integration | Real-time streaming, citations, and feedback working | QUERY-05, APP-05 | Phase 8 |
-| 10 - Pilot Preparation | System validated and ready for Costco pilot users | — | Phase 9 |
+| 10 - Pilot Preparation | System validated and ready for Costco pilot users | -- | Phase 9 |
 
 ---
 
@@ -44,6 +44,16 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 **Dependencies:** None
 
 **Requirements Covered:** None directly (infrastructure phase)
+
+**Plans:** 6 plans
+
+Plans:
+- [ ] 01-01-PLAN.md -- Monorepo setup with pnpm workspaces and shared packages
+- [ ] 01-02-PLAN.md -- Convex backend with schema and CRUD operations
+- [ ] 01-03-PLAN.md -- Cloudflare Workers with R2 bucket binding
+- [ ] 01-04-PLAN.md -- React frontend with Vite, Tailwind, and Convex integration
+- [ ] 01-05-PLAN.md -- Pinecone index setup (3072 dimensions, cosine)
+- [ ] 01-06-PLAN.md -- CI/CD pipeline with GitHub Actions
 
 **Success Criteria:**
 1. Monorepo with pnpm workspaces contains Convex app, Cloudflare Workers, and React frontend
@@ -85,7 +95,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 
 **Deliverables:**
 - eCFR API integration worker
-- Federal data ingestion pipeline (API → R2 → chunking → embedding → Pinecone)
+- Federal data ingestion pipeline (API -> R2 -> chunking -> embedding -> Pinecone)
 - Sync worker updates Convex sources table with federal freshness
 - Test query returns relevant federal regulations
 
@@ -113,7 +123,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 **Deliverables:**
 - Texas Statutes scraper (Cloudflare Worker)
 - Texas Admin Code scraper (Cloudflare Worker or Cornell LII)
-- State data processing pipeline (scrape → R2 → chunk → embed → Pinecone)
+- State data processing pipeline (scrape -> R2 -> chunk -> embed -> Pinecone)
 - Convex sources table tracks Texas statute and TAC freshness
 
 ---
@@ -138,7 +148,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 **Deliverables:**
 - County scraper supporting multiple county website formats
 - County data processing pipeline
-- Jurisdiction mapping: address → county FIPS code
+- Jurisdiction mapping: address -> county FIPS code
 - Test coverage report for 10 counties
 
 ---
@@ -220,8 +230,8 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 5. Response includes permit/license requirements with agency names and URLs
 
 **Deliverables:**
-- Convex action: query.execute (geocode → search → LLM → parse → store)
-- Mapbox integration for address → jurisdiction resolution
+- Convex action: query.execute (geocode -> search -> LLM -> parse -> store)
+- Mapbox integration for address -> jurisdiction resolution
 - Pinecone search with metadata filtering
 - Claude prompt engineering for compliance responses with citations
 - Citation parser extracts structured references from LLM output
@@ -246,7 +256,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 2. Authenticated user can create a new conversation
 3. User can view list of all their conversations
 4. User can reopen past conversations and continue with context
-5. Message status updates in real-time (pending → processing → complete)
+5. Message status updates in real-time (pending -> processing -> complete)
 
 **Deliverables:**
 - React frontend with Clerk authentication
@@ -276,7 +286,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 5. Streaming updates conversation UI without full page refresh
 
 **Deliverables:**
-- Streaming response implementation (Convex action → message updates → React)
+- Streaming response implementation (Convex action -> message updates -> React)
 - Citation rendering component with source links
 - Feedback mutation and UI (thumbs up/down)
 - Convex feedback table tracking helpful/not_helpful ratings
@@ -314,7 +324,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 
 | Phase | Status | Start Date | End Date | Requirements |
 |-------|--------|------------|----------|--------------|
-| 1 - Foundation | Pending | TBD | TBD | — |
+| 1 - Foundation | Planned | TBD | TBD | -- |
 | 2 - Federal Data | Pending | TBD | TBD | 6 |
 | 3 - State Data | Pending | TBD | TBD | 4 |
 | 4 - County Data | Pending | TBD | TBD | 2 |
@@ -323,7 +333,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 | 7 - Query Pipeline | Pending | TBD | TBD | 6 |
 | 8 - Application | Pending | TBD | TBD | 5 |
 | 9 - Integration | Pending | TBD | TBD | 2 |
-| 10 - Pilot Preparation | Pending | TBD | TBD | — |
+| 10 - Pilot Preparation | Pending | TBD | TBD | -- |
 
 ---
 
@@ -331,7 +341,7 @@ This roadmap delivers ComplianceIQ in 10 phases, building data pipelines layer b
 
 **Coverage Requirements:** COV-01 through COV-05 are validated during data ingestion phases (2-5) rather than being separate deliverables. Each coverage requirement confirms that data for specific jurisdictions or activities is successfully indexed.
 
-**Data Pipeline Pattern:** Phases 2-5 follow the same pattern: fetch/scrape → R2 storage → chunking → embedding → Pinecone indexing → Convex metadata sync. This repetition builds confidence and allows parallel development once the pattern is established.
+**Data Pipeline Pattern:** Phases 2-5 follow the same pattern: fetch/scrape -> R2 storage -> chunking -> embedding -> Pinecone indexing -> Convex metadata sync. This repetition builds confidence and allows parallel development once the pattern is established.
 
 **Infrastructure Phases:** Phases 1 (Foundation) and 10 (Pilot Preparation) are non-feature phases. They set up infrastructure and validate quality before customer delivery.
 
