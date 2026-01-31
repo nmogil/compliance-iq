@@ -1,0 +1,13 @@
+{
+  "extends": "@compliance-iq/tsconfig/node.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "paths": {
+      "@compliance-iq/shared-types": ["../../packages/shared-types/src"]
+    }
+  },
+  "include": ["convex/**/*", ".eslintrc.cjs"],
+  "exclude": ["node_modules", "dist", "convex/_generated"]
+}

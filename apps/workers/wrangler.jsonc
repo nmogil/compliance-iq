@@ -1,0 +1,19 @@
+{
+  "name": "compliance-iq-workers",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-31",
+  "node_compat": true,
+
+  // R2 bucket binding for document storage
+  "r2_buckets": [
+    {
+      "binding": "DOCUMENTS_BUCKET",
+      "bucket_name": "compliance-documents"
+    }
+  ],
+
+  // Local development settings
+  "dev": {
+    "port": 8787
+  }
+}

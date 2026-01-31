@@ -1,0 +1,17 @@
+{
+  "name": "@compliance-iq/convex",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy"
+  },
+  "dependencies": {
+    "@compliance-iq/shared-types": "workspace:*",
+    "convex": "^1.17.5"
+  },
+  "devDependencies": {
+    "@compliance-iq/tsconfig": "workspace:*"
+  }
+}
