@@ -9,7 +9,8 @@
     "types": "wrangler types"
   },
   "dependencies": {
-    "@compliance-iq/shared-types": "workspace:*"
+    "@compliance-iq/shared-types": "workspace:*",
+    "@pinecone-database/pinecone": "^6.1.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250110.0",
