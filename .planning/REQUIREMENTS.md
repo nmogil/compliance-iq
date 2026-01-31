@@ -92,40 +92,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| DATA-04 | TBD | Pending |
-| DATA-05 | TBD | Pending |
-| DATA-06 | TBD | Pending |
-| DATA-07 | TBD | Pending |
-| DATA-08 | TBD | Pending |
-| DATA-09 | TBD | Pending |
-| DATA-10 | TBD | Pending |
-| QUERY-01 | TBD | Pending |
-| QUERY-02 | TBD | Pending |
-| QUERY-03 | TBD | Pending |
-| QUERY-04 | TBD | Pending |
-| QUERY-05 | TBD | Pending |
-| QUERY-06 | TBD | Pending |
-| QUERY-07 | TBD | Pending |
-| APP-01 | TBD | Pending |
-| APP-02 | TBD | Pending |
-| APP-03 | TBD | Pending |
-| APP-04 | TBD | Pending |
-| APP-05 | TBD | Pending |
-| APP-06 | TBD | Pending |
-| COV-01 | TBD | Pending |
-| COV-02 | TBD | Pending |
-| COV-03 | TBD | Pending |
-| COV-04 | TBD | Pending |
-| COV-05 | TBD | Pending |
+| DATA-01 | Phase 2 | Pending |
+| DATA-02 | Phase 3 | Pending |
+| DATA-03 | Phase 3 | Pending |
+| DATA-04 | Phase 5 | Pending |
+| DATA-05 | Phase 5 | Pending |
+| DATA-06 | Phase 4 | Pending |
+| DATA-07 | Phase 2, validated in Phase 6 | Pending |
+| DATA-08 | Phase 2, validated in Phase 6 | Pending |
+| DATA-09 | Phase 2, validated in Phase 6 | Pending |
+| DATA-10 | Phase 2, validated in Phase 6 | Pending |
+| QUERY-01 | Phase 7 | Pending |
+| QUERY-02 | Phase 7 | Pending |
+| QUERY-03 | Phase 7 | Pending |
+| QUERY-04 | Phase 7 | Pending |
+| QUERY-05 | Phase 9 | Pending |
+| QUERY-06 | Phase 7 | Pending |
+| QUERY-07 | Phase 7 | Pending |
+| APP-01 | Phase 8 | Pending |
+| APP-02 | Phase 8 | Pending |
+| APP-03 | Phase 8 | Pending |
+| APP-04 | Phase 8 | Pending |
+| APP-05 | Phase 9 | Pending |
+| APP-06 | Phase 8 | Pending |
+| COV-01 | Phase 2 (validated) | Pending |
+| COV-02 | Phase 3 (validated) | Pending |
+| COV-03 | Phase 3 (validated) | Pending |
+| COV-04 | Phase 4 (validated) | Pending |
+| COV-05 | Phase 5 (validated) | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0
-- Unmapped: 28
+- Mapped to phases: 28
+- Unmapped: 0
+
+**Notes:**
+- DATA-07 through DATA-10 are first implemented in Phase 2 (Federal Data) and then validated across all data sources in Phase 6 (Data Processing)
+- COV-01 through COV-05 are validation requirements that confirm data coverage during their respective data ingestion phases
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after initial definition*
+*Last updated: 2026-01-31 after roadmap creation - all requirements mapped to phases*
