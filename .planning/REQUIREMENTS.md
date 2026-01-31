@@ -1,0 +1,131 @@
+# Requirements: ComplianceIQ
+
+**Defined:** 2026-01-31
+**Core Value:** Lawyers can get cited regulatory answers in minutes instead of hours
+
+## v1 Requirements
+
+Requirements for Texas pilot. Each maps to roadmap phases.
+
+### Data Pipeline
+
+- [ ] **DATA-01**: eCFR API integration returns federal regulation text with citations
+- [ ] **DATA-02**: Texas Statutes scraper extracts all 28 codes with section-level granularity
+- [ ] **DATA-03**: Texas Administrative Code scraper extracts relevant titles (16, 22, 25, 30, 37)
+- [ ] **DATA-04**: Municode scraper extracts ordinances from 15+ Texas cities
+- [ ] **DATA-05**: American Legal scraper extracts ordinances from Dallas, Fort Worth, Austin
+- [ ] **DATA-06**: County regulation scraper extracts from top 10 Texas counties
+- [ ] **DATA-07**: Chunking pipeline splits regulatory text into embeddable segments with metadata
+- [ ] **DATA-08**: Embedding pipeline generates vectors via OpenAI text-embedding-3-large
+- [ ] **DATA-09**: Pinecone index stores vectors with jurisdiction/activity/citation metadata
+- [ ] **DATA-10**: R2 storage persists raw scraped documents for audit/reprocessing
+
+### Query Interface
+
+- [ ] **QUERY-01**: User can ask natural language compliance questions
+- [ ] **QUERY-02**: System resolves address to applicable jurisdictions (federal, state, county, municipal)
+- [ ] **QUERY-03**: RAG pipeline retrieves relevant regulatory chunks from Pinecone
+- [ ] **QUERY-04**: Claude generates response with inline citations to source law
+- [ ] **QUERY-05**: Response streams in real-time as Claude generates
+- [ ] **QUERY-06**: Citations link to original source text (URLs or document references)
+- [ ] **QUERY-07**: Response identifies required permits/licenses with issuing agency
+
+### Application
+
+- [ ] **APP-01**: User can sign up and log in via Clerk authentication
+- [ ] **APP-02**: User can create new conversations
+- [ ] **APP-03**: User can view conversation history
+- [ ] **APP-04**: User can continue previous conversations with context preserved
+- [ ] **APP-05**: User can provide feedback (helpful/not helpful) on responses
+- [ ] **APP-06**: System tracks message status (pending, processing, streaming, complete, error)
+
+### Coverage
+
+- [ ] **COV-01**: Federal regulations covering Costco business activities (food, alcohol, pharmacy, fuel, employment)
+- [ ] **COV-02**: Texas state statutes relevant to retail operations
+- [ ] **COV-03**: Texas Administrative Code for licensing boards (pharmacy, optometry, alcohol)
+- [ ] **COV-04**: Top 10 Texas counties by Costco presence (Harris, Dallas, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso)
+- [ ] **COV-05**: Top 20 Texas cities by Costco presence (Houston, San Antonio, Dallas, Austin, Fort Worth, El Paso, Arlington, Plano, Corpus Christi, Lubbock, Laredo, Irving, Garland, Frisco, McKinney, Amarillo, Grand Prairie, Brownsville, Killeen, Pasadena)
+
+## v2 Requirements
+
+Deferred to P1/P2. Tracked but not in current roadmap.
+
+### Change Tracking (P1)
+
+- **CHANGE-01**: System monitors LegiScan for Texas bills affecting retail compliance
+- **CHANGE-02**: System monitors Federal Register for proposed/final rules
+- **CHANGE-03**: User receives alerts when relevant regulations change
+- **CHANGE-04**: System re-scrapes sources on schedule to detect updates
+
+### External API (P2)
+
+- **API-01**: REST API endpoint for programmatic compliance queries
+- **API-02**: API key authentication for external consumers
+- **API-03**: Rate limiting and usage tracking
+- **API-04**: OpenAPI specification for Costco integration
+
+### Dashboard (P2)
+
+- **DASH-01**: User can view compliance status across jurisdictions
+- **DASH-02**: User can see permit renewal timeline
+- **DASH-03**: User can generate compliance checklists for new locations
+- **DASH-04**: User can view agency contact information
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| Multi-state expansion | Texas pilot proves value first; data pipeline work compounds |
+| Mobile app | Web-first; lawyers use desktop for research |
+| OAuth/SSO | Email/password via Clerk sufficient for pilot |
+| Real-time legal chat | This is research tooling, not live support |
+| PDF report export | Can add later; streaming UI is primary interface |
+| Compliance scoring | Subjective; lawyers interpret requirements themselves |
+| Automated permit applications | Out of scope; this is research, not workflow |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DATA-01 | TBD | Pending |
+| DATA-02 | TBD | Pending |
+| DATA-03 | TBD | Pending |
+| DATA-04 | TBD | Pending |
+| DATA-05 | TBD | Pending |
+| DATA-06 | TBD | Pending |
+| DATA-07 | TBD | Pending |
+| DATA-08 | TBD | Pending |
+| DATA-09 | TBD | Pending |
+| DATA-10 | TBD | Pending |
+| QUERY-01 | TBD | Pending |
+| QUERY-02 | TBD | Pending |
+| QUERY-03 | TBD | Pending |
+| QUERY-04 | TBD | Pending |
+| QUERY-05 | TBD | Pending |
+| QUERY-06 | TBD | Pending |
+| QUERY-07 | TBD | Pending |
+| APP-01 | TBD | Pending |
+| APP-02 | TBD | Pending |
+| APP-03 | TBD | Pending |
+| APP-04 | TBD | Pending |
+| APP-05 | TBD | Pending |
+| APP-06 | TBD | Pending |
+| COV-01 | TBD | Pending |
+| COV-02 | TBD | Pending |
+| COV-03 | TBD | Pending |
+| COV-04 | TBD | Pending |
+| COV-05 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 28 total
+- Mapped to phases: 0
+- Unmapped: 28
+
+---
+*Requirements defined: 2026-01-31*
+*Last updated: 2026-01-31 after initial definition*
