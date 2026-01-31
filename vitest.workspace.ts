@@ -5,7 +5,4 @@ import { defineWorkspace } from 'vitest/config';
  *
  * This allows running tests across all packages and apps from the root.
  */
-export default defineWorkspace([
-  'apps/*',
-  'packages/*',
-]);
+export default defineWorkspace(['apps/*', 'packages/*']);

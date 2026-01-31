@@ -2,6 +2,7 @@
   "name": "compliance-iq",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.0.0",
   "scripts": {
     "build": "pnpm -r build",
@@ -9,6 +10,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@compliance-iq/eslint-config": "workspace:*",
     "@types/node": "^22.10.5",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",
