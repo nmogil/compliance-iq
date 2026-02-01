@@ -216,7 +216,7 @@ export function extractTACRuleText($: cheerio.CheerioAPI): string {
  * ```
  */
 export function extractTACSubsections(
-  $: cheerio.CheerioAPI,
+  _$: cheerio.CheerioAPI,
   text: string
 ): TexasSubsection[] {
   const subsections: TexasSubsection[] = [];
@@ -251,6 +251,7 @@ export function extractTACSubsections(
   // Split text at subsection boundaries
   for (let i = 0; i < markers.length; i++) {
     const marker = markers[i];
+    if (!marker) continue; // TypeScript safety
     const nextMarker = markers[i + 1];
 
     // Get text from current marker to next marker (or end of text)

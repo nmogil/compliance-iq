@@ -12,13 +12,24 @@ export * from './types';
 export { fetchTexasStatute, fetchTexasCode, discoverCodeChapters } from './fetch-statutes';
 export { parseStatuteHTML, extractSectionText } from './parse-statutes';
 
-// Future: TAC fetcher and parser (03-05)
-// export { fetchTACRule, fetchTACTitle } from './fetch-tac';
-// export { parseTACHTML } from './parse-tac';
+// TAC fetcher and parser
+export { fetchTACRule, fetchTACTitle, fetchTACHTML, discoverTACChapters, discoverChapterRules } from './fetch-tac';
+export { parseTACHTML, extractTACRuleText, extractTACRuleHeading } from './parse-tac';
 
-// Future: Storage and chunking (03-04)
+// Chunking
+export {
+  chunkTexasStatute,
+  chunkTACRule,
+  chunkTexasCode,
+  chunkTACTitle,
+  splitWithOverlap,
+  getTexasChunkStats,
+  type TexasChunkContext,
+  type TACChunkContext,
+} from './chunk';
+
+// Future: Storage (03-04)
 // export { storeTexasStatute, saveTexasCheckpoint } from './storage';
-// export { chunkTexasStatute } from './chunk';
 
 // Future: Pipeline orchestrator (03-06)
 // export { processTexasStatutes, processAllTexasSources } from './pipeline';
