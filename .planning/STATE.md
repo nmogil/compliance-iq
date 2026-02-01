@@ -20,17 +20,17 @@
 ## Current Position
 
 **Phase:** 3 of 10 (State Data)
-**Plan:** 3 of 6 in phase
+**Plan:** 5 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 03-03-PLAN.md
+**Last activity:** 2026-02-01 - Completed 03-05-PLAN.md
 
 **Progress:**
 ```
-[████████████░░░░░░░░] 25% (15/60 plans complete)
+[█████████████░░░░░░░] 27% (16/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
-Phase 3: State Data ███░░░░░ 3/6 complete
+Phase 3: State Data ████░░░░ 4/6 complete
 ```
 
 ---
@@ -39,7 +39,7 @@ Phase 3: State Data ███░░░░░ 3/6 complete
 
 ### Velocity
 - Phases completed: 2/10
-- Plans completed: 15/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 3/6)
+- Plans completed: 16/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 4/6)
 - Requirements delivered: 6/28 (DATA-01, DATA-07-10, COV-01)
 - Days since start: 1
 
@@ -93,6 +93,9 @@ Phase 3: State Data ███░░░░░ 3/6 complete
 | Flexible HTML selector strategy | 2026-02-01 | Try multiple selectors for robust parsing across varying page structures | Active |
 | AsyncGenerator for code streaming | 2026-02-01 | Memory-efficient for large codes with 500+ sections | Active |
 | Numeric sorting for chapters/sections | 2026-02-01 | Ensures correct ordering (1, 2, 10 not 1, 10, 2) | Active |
+| Discovery functions for TAC navigation | 2026-02-01 | Parse TOC pages to find chapters/rules vs brute-force URL attempts | Active |
+| Flexible TAC selectors | 2026-02-01 | Multiple selector strategies handle HTML structure variations across titles | Active |
+| AsyncGenerator for TAC title fetching | 2026-02-01 | Yields rules one at a time for constant memory usage | Active |
 
 ### Recent Changes
 
@@ -129,16 +132,17 @@ Phase 3: State Data ███░░░░░ 3/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-03-PLAN.md: Texas Statutes Scraper
-- Created Cheerio-based HTML parser for capitol.texas.gov statute pages
-- Implemented statute fetcher with rate limiting (200ms delay)
-- Built chapter/section discovery via TOC and chapter page parsing
-- Added AsyncGenerator for memory-efficient streaming of large codes
-- 3 commits: parse-statutes + fetch-statutes + index
+- Completed 03-05-PLAN.md: TAC Scraper
+- Created Cheerio-based TAC HTML parser with flexible selectors for sos.state.tx.us
+- Implemented TAC fetcher with rate limiting and title/chapter/rule discovery
+- Built unified chunking module for both statutes and TAC rules
+- Added subsection-aware chunking with 15% overlap for large sections
+- AsyncGenerator pattern for memory-efficient title streaming
+- 3 commits: parse-tac + fetch-tac + chunk + exports
 
 ### What's Next
 1. Continue Phase 3: Texas State Data
-2. Next plan: Storage and chunking for Texas data
+2. Next plan: R2 storage for Texas regulations (03-04) or Pipeline orchestration (03-06)
 3. Then: TAC scraper for Texas Administrative Code
 4. Then: Pipeline orchestration for Texas
 5. Before production: Configure Pinecone API key and Convex URL in Workers secrets
@@ -196,10 +200,24 @@ Phase 3: State Data ███░░░░░ 3/6 complete
   - fetchTexasCode AsyncGenerator for streaming large codes
   - Graceful 404 handling (log and continue)
   - Numeric sorting for chapters and sections
+- **TAC Scraper (03-05):** SOS.state.tx.us fetcher and parser
+  - parseTACHTML with Cheerio for flexible HTML extraction
+  - extractTACRuleHeading, extractTACRuleText, extractTACSubsections
+  - fetchTACRule for individual rules
+  - discoverTACChapters, discoverChapterRules for TOC parsing
+  - fetchTACTitle AsyncGenerator for streaming titles
+  - Discovery functions parse TOC pages vs brute-force URLs
+  - Flexible selectors handle structure variations across titles
+- **Chunking Module (03-05):** Unified chunking for statutes and TAC
+  - chunkTexasStatute and chunkTACRule with subsection-aware splitting
+  - chunkTexasCode and chunkTACTitle for batch processing
+  - splitWithOverlap for paragraph-based splitting (15% overlap)
+  - tx-statute and tx-tac sourceTypes
+  - Proper Bluebook citations for both types
+  - getTexasChunkStats for monitoring chunk quality
 
 **Remaining:**
-- Storage and chunking (03-04)
-- TAC scraper (03-05)
+- R2 storage for Texas regulations (03-04)
 - Pipeline orchestration (03-06)
 
 ---
