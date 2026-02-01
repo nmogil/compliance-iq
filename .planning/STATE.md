@@ -19,17 +19,18 @@
 
 ## Current Position
 
-**Phase:** 2 of 10 (Federal Data) - COMPLETE
-**Plan:** 6 of 6 in phase
-**Status:** Phase complete
-**Last activity:** 2026-02-01 - Completed 02-06-PLAN.md
+**Phase:** 3 of 10 (State Data)
+**Plan:** 1 of 6 in phase
+**Status:** In progress
+**Last activity:** 2026-02-01 - Completed 03-01-PLAN.md
 
 **Progress:**
 ```
-[████████████░░░░░░░░] 20% (2/10 phases complete)
+[████████████░░░░░░░░] 22% (13/60 plans complete)
 
-Phase 1: Foundation ████████ COMPLETE
-Phase 2: Federal Data ██████░░ 6/6 complete
+Phase 1: Foundation ████████ COMPLETE (6/6)
+Phase 2: Federal Data ████████ COMPLETE (6/6)
+Phase 3: State Data █░░░░░░░ 1/6 complete
 ```
 
 ---
@@ -38,12 +39,12 @@ Phase 2: Federal Data ██████░░ 6/6 complete
 
 ### Velocity
 - Phases completed: 2/10
-- Plans completed: 12/12 (Phase 1: 6/6, Phase 2: 6/6)
+- Plans completed: 13/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 1/6)
 - Requirements delivered: 6/28 (DATA-01, DATA-07-10, COV-01)
 - Days since start: 1
 
 ### Quality
-- Test coverage: 7 tests passing
+- Test coverage: 13 tests passing
 - Lint: 0 errors, 1 warning
 
 ---
@@ -78,6 +79,10 @@ Phase 2: Federal Data ██████░░ 6/6 complete
 | Per-part checkpointing | 2026-02-01 | Save checkpoint after each part for granular resumption | Active |
 | Graceful error handling in pipeline | 2026-02-01 | Individual failures don't stop entire batch | Active |
 | Convex sync as best-effort | 2026-02-01 | Pipeline success independent of Convex availability | Active |
+| 200ms rate limit for Texas scraping | 2026-02-01 | Conservative delay prevents 429 from capitol.texas.gov, sos.state.tx.us | Active |
+| 25% jitter on exponential backoff | 2026-02-01 | Prevents thundering herd on retry attempts | Active |
+| NotFoundError never retried | 2026-02-01 | 404 is permanent - no point retrying | Active |
+| Retry-After header compliance | 2026-02-01 | RFC 7231 - respect server retry guidance | Active |
 
 ### Recent Changes
 
@@ -114,18 +119,18 @@ Phase 2: Federal Data ██████░░ 6/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 02-06-PLAN.md: Pipeline Orchestration
-- Built end-to-end pipeline: fetch -> store -> chunk -> embed -> index
-- Added HTTP endpoints: POST /pipeline/federal and /pipeline/federal/:title
-- Implemented checkpoint-based resumption for failure recovery
-- Integrated Pinecone vector upsert with metadata filtering
-- Added Convex sync for freshness tracking
-- 2 commits: pipeline orchestrator + HTTP endpoints
+- Completed 03-02-PLAN.md: Scraper Utilities
+- Created reusable HTTP utilities for Texas government scraping
+- Implemented exponential backoff with jitter (1s, 2s, 4s, 8s)
+- Per-domain rate limiting prevents 429 errors (200ms default)
+- Retry-After header parsing complies with RFC 7231
+- 6 unit tests verify retry logic and error handling
+- 2 commits: scraper utilities + unit tests
 
 ### What's Next
-1. Phase 2 complete! Federal data pipeline operational
-2. Begin Phase 3: Texas State Data
-3. Replicate pipeline pattern for Texas regulations
+1. Continue Phase 3: Texas State Data
+2. Next plan: Texas Statutes scraper using fetchWithRateLimit()
+3. Then: TAC scraper for Texas Administrative Code
 4. Before production: Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
@@ -150,6 +155,26 @@ Phase 2: Federal Data ██████░░ 6/6 complete
 - Title 29: Labor
 - Title 40: Protection of Environment
 - Title 49: Transportation
+
+---
+
+## Phase 3 Deliverables (In Progress)
+
+### Texas State Data Pipeline
+
+**Completed:**
+- **Scraper Utilities:** Reusable HTTP utilities with rate limiting and retry
+  - `fetchWithRateLimit()` - Per-domain rate limiting (200ms default)
+  - `retryWithBackoff()` - Exponential backoff with jitter (1s, 2s, 4s, 8s)
+  - Retry-After header parsing (RFC 7231)
+  - Custom error types: NotFoundError, RateLimitError, ScrapingError
+  - 6 unit tests passing
+
+**Remaining:**
+- Texas Statutes scraper (capitol.texas.gov)
+- TAC scraper (sos.state.tx.us)
+- Texas-specific chunking and embedding
+- R2 storage for Texas regulations
 
 ---
 
