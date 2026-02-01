@@ -83,6 +83,13 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 | 25% jitter on exponential backoff | 2026-02-01 | Prevents thundering herd on retry attempts | Active |
 | NotFoundError never retried | 2026-02-01 | 404 is permanent - no point retrying | Active |
 | Retry-After header compliance | 2026-02-01 | RFC 7231 - respect server retry guidance | Active |
+| 27 Texas statute codes targeted | 2026-02-01 | Comprehensive retail compliance (prioritize OC, HS, AL, TX, LA, PE, BC, IN) | Active |
+| 5 TAC titles targeted | 2026-02-01 | Focused on licensing, health, environmental, public safety regulations | Active |
+| Mirrored CFR type structure for Texas | 2026-02-01 | TexasChunk parallels CFRChunk for consistent pipeline patterns | Active |
+| Bluebook format for Texas citations | 2026-02-01 | Tex. [Code] Ann. § [section] (West [year]) format | Active |
+| capitol.texas.gov for statutes | 2026-02-01 | Official source with stable URL structure | Active |
+| SOS TAC website for admin code | 2026-02-01 | Official Texas Secretary of State source | Active |
+| Cheerio for HTML parsing | 2026-02-01 | TypeScript-native, no @types needed | Active |
 
 ### Recent Changes
 
@@ -119,19 +126,20 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-02-PLAN.md: Scraper Utilities
-- Created reusable HTTP utilities for Texas government scraping
-- Implemented exponential backoff with jitter (1s, 2s, 4s, 8s)
-- Per-domain rate limiting prevents 429 errors (200ms default)
-- Retry-After header parsing complies with RFC 7231
-- 6 unit tests verify retry logic and error handling
-- 2 commits: scraper utilities + unit tests
+- Completed 03-01-PLAN.md: Texas Pipeline Foundation
+- Created Texas type system with 10+ interfaces for statutes and TAC
+- Configured 27 Texas statute codes (priority: OC, HS, AL, TX, LA, PE, BC, IN)
+- Configured 5 TAC titles (16, 22, 25, 30, 37)
+- Extended citations.ts with 8 Texas citation functions
+- Installed cheerio 1.2.0 for HTML parsing
+- 3 commits: types + citations + cheerio
 
 ### What's Next
 1. Continue Phase 3: Texas State Data
-2. Next plan: Texas Statutes scraper using fetchWithRateLimit()
-3. Then: TAC scraper for Texas Administrative Code
-4. Before production: Configure Pinecone API key and Convex URL in Workers secrets
+2. Next plan: HTML scraper utilities with retry and rate limiting
+3. Then: Texas Statutes scraper (capitol.texas.gov)
+4. Then: TAC scraper for Texas Administrative Code
+5. Before production: Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
 
@@ -163,18 +171,22 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 ### Texas State Data Pipeline
 
 **Completed:**
-- **Scraper Utilities:** Reusable HTTP utilities with rate limiting and retry
-  - `fetchWithRateLimit()` - Per-domain rate limiting (200ms default)
-  - `retryWithBackoff()` - Exponential backoff with jitter (1s, 2s, 4s, 8s)
-  - Retry-After header parsing (RFC 7231)
-  - Custom error types: NotFoundError, RateLimitError, ScrapingError
-  - 6 unit tests passing
+- **Pipeline Foundation:** Type system and citation utilities
+  - 10+ TypeScript interfaces (TexasCode, TACTitle, TexasChunk, TexasCheckpoint, etc.)
+  - 27 Texas statute codes configured with category mappings
+  - 5 TAC titles configured (16, 22, 25, 30, 37)
+  - 8 Texas citation functions (generateTexasStatuteCitation, generateTACCitation, etc.)
+  - TEXAS_CODE_ABBREVIATIONS mapping for Bluebook format
+  - cheerio 1.2.0 installed for HTML parsing
+  - Helper functions: getEnabledStatuteCodes, getEnabledTACTitles, getCategoriesForCode, getCategoriesForTACTitle
 
 **Remaining:**
+- Scraper utilities (HTTP with rate limiting and retry)
 - Texas Statutes scraper (capitol.texas.gov)
 - TAC scraper (sos.state.tx.us)
 - Texas-specific chunking and embedding
 - R2 storage for Texas regulations
+- Pipeline orchestration
 
 ---
 
