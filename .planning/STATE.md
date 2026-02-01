@@ -20,17 +20,17 @@
 ## Current Position
 
 **Phase:** 3 of 10 (State Data)
-**Plan:** 1 of 6 in phase
+**Plan:** 3 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 03-01-PLAN.md
+**Last activity:** 2026-02-01 - Completed 03-03-PLAN.md
 
 **Progress:**
 ```
-[████████████░░░░░░░░] 22% (13/60 plans complete)
+[████████████░░░░░░░░] 25% (15/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
-Phase 3: State Data █░░░░░░░ 1/6 complete
+Phase 3: State Data ███░░░░░ 3/6 complete
 ```
 
 ---
@@ -39,7 +39,7 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 
 ### Velocity
 - Phases completed: 2/10
-- Plans completed: 13/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 1/6)
+- Plans completed: 15/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 3/6)
 - Requirements delivered: 6/28 (DATA-01, DATA-07-10, COV-01)
 - Days since start: 1
 
@@ -90,6 +90,9 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 | capitol.texas.gov for statutes | 2026-02-01 | Official source with stable URL structure | Active |
 | SOS TAC website for admin code | 2026-02-01 | Official Texas Secretary of State source | Active |
 | Cheerio for HTML parsing | 2026-02-01 | TypeScript-native, no @types needed | Active |
+| Flexible HTML selector strategy | 2026-02-01 | Try multiple selectors for robust parsing across varying page structures | Active |
+| AsyncGenerator for code streaming | 2026-02-01 | Memory-efficient for large codes with 500+ sections | Active |
+| Numeric sorting for chapters/sections | 2026-02-01 | Ensures correct ordering (1, 2, 10 not 1, 10, 2) | Active |
 
 ### Recent Changes
 
@@ -126,19 +129,18 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-01-PLAN.md: Texas Pipeline Foundation
-- Created Texas type system with 10+ interfaces for statutes and TAC
-- Configured 27 Texas statute codes (priority: OC, HS, AL, TX, LA, PE, BC, IN)
-- Configured 5 TAC titles (16, 22, 25, 30, 37)
-- Extended citations.ts with 8 Texas citation functions
-- Installed cheerio 1.2.0 for HTML parsing
-- 3 commits: types + citations + cheerio
+- Completed 03-03-PLAN.md: Texas Statutes Scraper
+- Created Cheerio-based HTML parser for capitol.texas.gov statute pages
+- Implemented statute fetcher with rate limiting (200ms delay)
+- Built chapter/section discovery via TOC and chapter page parsing
+- Added AsyncGenerator for memory-efficient streaming of large codes
+- 3 commits: parse-statutes + fetch-statutes + index
 
 ### What's Next
 1. Continue Phase 3: Texas State Data
-2. Next plan: HTML scraper utilities with retry and rate limiting
-3. Then: Texas Statutes scraper (capitol.texas.gov)
-4. Then: TAC scraper for Texas Administrative Code
+2. Next plan: Storage and chunking for Texas data
+3. Then: TAC scraper for Texas Administrative Code
+4. Then: Pipeline orchestration for Texas
 5. Before production: Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
@@ -171,7 +173,7 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
 ### Texas State Data Pipeline
 
 **Completed:**
-- **Pipeline Foundation:** Type system and citation utilities
+- **Pipeline Foundation (03-01):** Type system and citation utilities
   - 10+ TypeScript interfaces (TexasCode, TACTitle, TexasChunk, TexasCheckpoint, etc.)
   - 27 Texas statute codes configured with category mappings
   - 5 TAC titles configured (16, 22, 25, 30, 37)
@@ -179,14 +181,26 @@ Phase 3: State Data █░░░░░░░ 1/6 complete
   - TEXAS_CODE_ABBREVIATIONS mapping for Bluebook format
   - cheerio 1.2.0 installed for HTML parsing
   - Helper functions: getEnabledStatuteCodes, getEnabledTACTitles, getCategoriesForCode, getCategoriesForTACTitle
+- **Scraper Utilities (03-02):** HTTP with rate limiting and retry
+  - fetchWithRateLimit with 200ms default delay
+  - retryWithBackoff with exponential backoff
+  - NotFoundError, RateLimitError, ScrapingError classes
+  - Retry-After header parsing
+  - Per-domain rate limiting
+- **Texas Statutes Scraper (03-03):** Capitol.texas.gov fetcher and parser
+  - parseStatuteHTML with Cheerio for HTML extraction
+  - Flexible selector strategy for varying page structures
+  - extractSectionHeading, extractSectionText, extractSubsections
+  - fetchTexasStatute for individual sections
+  - discoverCodeChapters, discoverChapterSections for TOC/chapter parsing
+  - fetchTexasCode AsyncGenerator for streaming large codes
+  - Graceful 404 handling (log and continue)
+  - Numeric sorting for chapters and sections
 
 **Remaining:**
-- Scraper utilities (HTTP with rate limiting and retry)
-- Texas Statutes scraper (capitol.texas.gov)
-- TAC scraper (sos.state.tx.us)
-- Texas-specific chunking and embedding
-- R2 storage for Texas regulations
-- Pipeline orchestration
+- Storage and chunking (03-04)
+- TAC scraper (03-05)
+- Pipeline orchestration (03-06)
 
 ---
 
