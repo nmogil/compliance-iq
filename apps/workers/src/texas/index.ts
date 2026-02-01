@@ -1,7 +1,7 @@
 /**
  * Texas State Data Pipeline Module
  *
- * Provides scraping, parsing, and processing for Texas Statutes
+ * Provides scraping, parsing, storage, and processing for Texas Statutes
  * and Texas Administrative Code (TAC).
  */
 
@@ -40,5 +40,13 @@ export {
   getTACRule,
 } from './storage';
 
-// Future: Pipeline orchestrator (03-06)
-// export { processTexasStatutes, processAllTexasSources } from './pipeline';
+// Pipeline orchestrator
+export {
+  processTexasCode,
+  processTexasTACTitle,
+  processTexasStatutes,
+  processTexasTAC,
+  processAllTexasSources,
+  type TexasPipelineResult,
+  type TexasBatchPipelineResult,
+} from './pipeline';
