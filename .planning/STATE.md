@@ -20,17 +20,17 @@
 ## Current Position
 
 **Phase:** 3 of 10 (State Data)
-**Plan:** 5 of 6 in phase
-**Status:** In progress
-**Last activity:** 2026-02-01 - Completed 03-04-PLAN.md
+**Plan:** 6 of 6 in phase
+**Status:** Phase complete
+**Last activity:** 2026-02-01 - Completed 03-06-PLAN.md
 
 **Progress:**
 ```
-[█████████████░░░░░░░] 28% (17/60 plans complete)
+[██████████████░░░░░░] 30% (18/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
-Phase 3: State Data █████░░░ 5/6 complete
+Phase 3: State Data ████████ COMPLETE (6/6)
 ```
 
 ---
@@ -38,9 +38,9 @@ Phase 3: State Data █████░░░ 5/6 complete
 ## Performance Metrics
 
 ### Velocity
-- Phases completed: 2/10
-- Plans completed: 17/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 5/6)
-- Requirements delivered: 6/28 (DATA-01, DATA-07-10, COV-01)
+- Phases completed: 3/10
+- Plans completed: 18/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6)
+- Requirements delivered: 7/28 (DATA-01, DATA-02, DATA-07-10, COV-01)
 - Days since start: 1
 
 ### Quality
@@ -99,6 +99,9 @@ Phase 3: State Data █████░░░ 5/6 complete
 | Texas R2 folder structure | 2026-02-01 | texas/statutes/{code}/chapter-{chapter}/{section}.html hierarchy | Active |
 | Texas checkpoint per source type | 2026-02-01 | Separate checkpoints for statute and tac source types | Active |
 | TAC R2 folder structure | 2026-02-01 | texas/tac/title-{title}/chapter-{chapter}/{section}.html hierarchy | Active |
+| Sequential Texas code processing | 2026-02-01 | Process 27 codes and 5 titles sequentially to avoid API overload | Active |
+| Reuse federal embedChunks for Texas | 2026-02-01 | TexasChunk and CFRChunk share same embedding interface | Active |
+| State sourceType for Texas in Pinecone | 2026-02-01 | Use "state" to match ChunkMetadata type (not "tx-statute" or "tx-tac") | Active |
 
 ### Recent Changes
 
@@ -135,19 +138,25 @@ Phase 3: State Data █████░░░ 5/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-04-PLAN.md: Texas Storage
-- Created texas/storage.ts with R2 storage for statutes and TAC
-- Implemented 8 storage functions: storeTexasStatute, getTexasStatute, listTexasStatuteSections, saveTexasCheckpoint, loadTexasCheckpoint, clearTexasCheckpoint, storeTACRule, getTACRule
-- R2 folder structure: texas/statutes/{code}/chapter-{chapter}/ and texas/tac/title-{title}/chapter-{chapter}/
-- Checkpoint management: texas/checkpoints/statute.json and texas/checkpoints/tac.json
-- Updated texas/index.ts with storage exports
-- 2 commits: storage module + exports
+- Completed 03-06-PLAN.md: Texas Pipeline Orchestration
+- Created texas/pipeline.ts with end-to-end pipeline orchestrator
+- Implemented 6 pipeline functions: processTexasCode, processTexasTACTitle, processTexasStatutes, processTexasTAC, processAllTexasSources, syncConvexTexasSources
+- Added 5 HTTP endpoints: POST /pipeline/texas, POST /pipeline/texas/statutes, POST /pipeline/texas/tac, POST /pipeline/texas/statutes/:code, POST /pipeline/texas/tac/:title
+- Checkpoint-based resumption for both statutes and TAC
+- Pinecone indexing with TX jurisdiction and state sourceType
+- Best-effort Convex sync (non-blocking)
+- 3 commits: pipeline orchestrator + HTTP endpoints + module exports
+- **Phase 3 COMPLETE** - Texas data pipeline operational
 
 ### What's Next
-1. Continue Phase 3: Texas State Data
-2. Next plan: Pipeline orchestration (03-06)
-3. Then: Complete Phase 3
-4. Before production: Configure Pinecone API key and Convex URL in Workers secrets
+1. Phase 4: Query Implementation
+   - RAG query processor with Pinecone + Convex
+   - Citation extraction and ranking
+   - Multi-jurisdiction query routing
+2. Before production:
+   - Run small-scale test of Texas pipeline (single code + single title)
+   - Fix TypeScript errors in fetch-statutes.ts and parse-statutes.ts
+   - Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
 
@@ -178,7 +187,7 @@ Phase 3: State Data █████░░░ 5/6 complete
 
 ### Texas State Data Pipeline
 
-**Completed:**
+**All 6 plans complete:**
 - **Pipeline Foundation (03-01):** Type system and citation utilities
   - 10+ TypeScript interfaces (TexasCode, TACTitle, TexasChunk, TexasCheckpoint, etc.)
   - 27 Texas statute codes configured with category mappings
@@ -225,9 +234,15 @@ Phase 3: State Data █████░░░ 5/6 complete
   - R2 folder structure: texas/tac/title-{title}/chapter-{chapter}/
   - Checkpoint storage: texas/checkpoints/{sourceType}.json
   - Mirrors federal/storage.ts patterns
-
-**Remaining:**
-- Pipeline orchestration (03-06)
+- **Pipeline Orchestration (03-06):** End-to-end pipeline and HTTP endpoints
+  - processTexasCode, processTexasTACTitle for individual sources
+  - processTexasStatutes, processTexasTAC for batch processing
+  - processAllTexasSources for complete pipeline (statutes + TAC)
+  - Checkpoint-based resumption for fault tolerance
+  - Pinecone indexing with TX jurisdiction and state sourceType
+  - 5 HTTP endpoints for manual triggering
+  - Best-effort Convex freshness sync
+  - Graceful error handling (individual failures don't stop batch)
 
 ---
 
