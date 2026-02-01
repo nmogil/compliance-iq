@@ -117,6 +117,16 @@ Plans:
 
 **Dependencies:** Phase 2
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 03-01-PLAN.md -- Types, Texas citation generators, and Cheerio dependency
+- [ ] 03-02-PLAN.md -- Scraper utilities (rate limiting, retry, exponential backoff)
+- [ ] 03-03-PLAN.md -- Texas Statutes fetcher and HTML parser
+- [ ] 03-04-PLAN.md -- Texas Statutes storage and chunking pipeline
+- [ ] 03-05-PLAN.md -- Texas Administrative Code fetcher and HTML parser
+- [ ] 03-06-PLAN.md -- Texas pipeline orchestration and HTTP endpoints
+
 **Requirements Covered:**
 - DATA-02: Texas Statutes scraper extracts all 28 codes with section-level granularity
 - DATA-03: Texas Administrative Code scraper extracts relevant titles (16, 22, 25, 30, 37)
