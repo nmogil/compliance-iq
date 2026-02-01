@@ -78,6 +78,16 @@ Plans:
 
 **Dependencies:** Phase 1
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 02-01-PLAN.md -- Types and utilities (tokens, citations, CFR data structures)
+- [ ] 02-02-PLAN.md -- eCFR API integration (fetcher, XML parser)
+- [ ] 02-03-PLAN.md -- R2 storage pipeline (raw XML, checkpointing)
+- [ ] 02-04-PLAN.md -- Chunking pipeline (section-level, Bluebook citations)
+- [ ] 02-05-PLAN.md -- Embedding pipeline (OpenAI text-embedding-3-large)
+- [ ] 02-06-PLAN.md -- Pipeline orchestration and HTTP trigger
+
 **Requirements Covered:**
 - DATA-01: eCFR API integration returns federal regulation text with citations
 - DATA-07: Chunking pipeline splits regulatory text into embeddable segments with metadata
