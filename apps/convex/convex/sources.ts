@@ -107,3 +107,71 @@ export const updateStatus = mutation({
     });
   },
 });
+
+/**
+ * Update federal data pipeline status
+ * Called by Cloudflare Workers after processing CFR titles
+ */
+export const updateFederalStatus = mutation({
+  args: {
+    status: v.union(
+      v.literal('pending'),
+      v.literal('active'),
+      v.literal('complete'),
+      v.literal('error')
+    ),
+    lastScrapedAt: v.number(),
+    titlesProcessed: v.optional(v.number()),
+    totalVectors: v.optional(v.number()),
+    durationMs: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Find or create the federal CFR source record
+    const existingSource = await ctx.db
+      .query('sources')
+      .filter((q) => q.eq(q.field('name'), 'Federal CFR'))
+      .first();
+
+    const now = Date.now();
+
+    if (existingSource) {
+      // Update existing record
+      await ctx.db.patch(existingSource._id, {
+        status: args.status,
+        lastScrapedAt: args.lastScrapedAt,
+        updatedAt: now,
+      });
+      return existingSource._id;
+    } else {
+      // Create new record - need a federal jurisdiction first
+      // Look for existing US federal jurisdiction or create placeholder
+      let federalJurisdiction = await ctx.db
+        .query('jurisdictions')
+        .filter((q) => q.eq(q.field('name'), 'United States'))
+        .first();
+
+      if (!federalJurisdiction) {
+        const jurisdictionId = await ctx.db.insert('jurisdictions', {
+          name: 'United States',
+          type: 'federal',
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+        });
+        federalJurisdiction = await ctx.db.get(jurisdictionId);
+      }
+
+      // Create federal source record
+      return await ctx.db.insert('sources', {
+        jurisdictionId: federalJurisdiction!._id,
+        name: 'Federal CFR',
+        url: 'https://www.ecfr.gov',
+        sourceType: 'regulations',
+        status: args.status,
+        lastScrapedAt: args.lastScrapedAt,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  },
+});

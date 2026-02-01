@@ -381,7 +381,7 @@ async function syncConvexSources(
       body: JSON.stringify({
         path: 'sources:updateFederalStatus',
         args: {
-          status: results.success ? 'complete' : 'partial',
+          status: results.success ? 'complete' : 'error',
           lastScrapedAt: Date.now(),
           titlesProcessed: results.titlesProcessed,
           totalVectors: results.totalVectors,
