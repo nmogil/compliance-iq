@@ -20,16 +20,16 @@
 ## Current Position
 
 **Phase:** 2 of 10 (Federal Data) - IN PROGRESS
-**Plan:** 02-03 of 6 in phase
+**Plan:** 02-04 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 02-03-PLAN.md
+**Last activity:** 2026-02-01 - Completed 02-04-PLAN.md
 
 **Progress:**
 ```
-[████████░░░░░░░░░░░░] 14% (8/12 plans complete across phases 1-2)
+[████████░░░░░░░░░░░░] 17% (9/12 plans complete across phases 1-2)
 
 Phase 1: Foundation ████████ COMPLETE
-Phase 2: Federal Data ███░░░░░ 2/6 complete
+Phase 2: Federal Data ████░░░░ 3/6 complete
 ```
 
 ---
@@ -38,7 +38,7 @@ Phase 2: Federal Data ███░░░░░ 2/6 complete
 
 ### Velocity
 - Phases completed: 1/10
-- Plans completed: 8/12 (Phase 1: 6/6, Phase 2: 2/6)
+- Plans completed: 9/12 (Phase 1: 6/6, Phase 2: 3/6)
 - Requirements delivered: 0/28 (infrastructure phase)
 - Days since start: 1
 
@@ -68,6 +68,9 @@ Phase 2: Federal Data ███░░░░░ 2/6 complete
 | 7 target CFR titles | 2026-02-01 | Covers retail compliance needs (food, alcohol, labor, fuel) | Active |
 | R2 folder structure for CFR | 2026-02-01 | federal/cfr/title-X/part-Y.xml hierarchy | Active |
 | Pipeline checkpointing per title | 2026-02-01 | Enables resume from failures without re-fetching | Active |
+| 1500 token chunk maximum | 2026-02-01 | Well under 8192 embedding limit, allows headroom for metadata | Active |
+| 15% overlap for chunk splitting | 2026-02-01 | Preserves cross-reference context between subsections | Active |
+| Section-level chunking granularity | 2026-02-01 | Respects legal structure, subsection split only when needed | Active |
 
 ### Recent Changes
 
@@ -98,16 +101,16 @@ Phase 2: Federal Data ███░░░░░ 2/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 02-03-PLAN.md: R2 Storage Pipeline
-- Created generic R2 storage utilities with metadata support
-- Built federal-specific CFR storage with organized folder structure
-- Implemented pipeline checkpoint save/load for resilience
-- 2 commits: R2 utilities, federal storage
+- Completed 02-04-PLAN.md: CFR Chunking Pipeline
+- Implemented structure-aware section chunking with subsection parsing
+- Built subsection splitting for oversized sections with 15% overlap
+- Added batch processing and statistics for monitoring
+- 1 commit: chunking implementation (both tasks in single file)
 
 ### What's Next
 1. Continue Phase 2: Federal Data
-2. Next plan: 02-04 (Chunking Pipeline)
-3. Then: 02-05 (Embedding), 02-06 (Pinecone)
+2. Next plan: 02-05 (Embedding Generation)
+3. Then: 02-06 (Pinecone Upsert)
 
 ---
 
