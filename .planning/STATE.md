@@ -20,16 +20,16 @@
 ## Current Position
 
 **Phase:** 2 of 10 (Federal Data) - IN PROGRESS
-**Plan:** 02-04 of 6 in phase
+**Plan:** 02-05 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 02-04-PLAN.md
+**Last activity:** 2026-02-01 - Completed 02-05-PLAN.md
 
 **Progress:**
 ```
-[████████░░░░░░░░░░░░] 17% (9/12 plans complete across phases 1-2)
+[████████░░░░░░░░░░░░] 18% (10/12 plans complete across phases 1-2)
 
 Phase 1: Foundation ████████ COMPLETE
-Phase 2: Federal Data ████░░░░ 3/6 complete
+Phase 2: Federal Data █████░░░ 4/6 complete
 ```
 
 ---
@@ -38,7 +38,7 @@ Phase 2: Federal Data ████░░░░ 3/6 complete
 
 ### Velocity
 - Phases completed: 1/10
-- Plans completed: 9/12 (Phase 1: 6/6, Phase 2: 3/6)
+- Plans completed: 10/12 (Phase 1: 6/6, Phase 2: 4/6)
 - Requirements delivered: 0/28 (infrastructure phase)
 - Days since start: 1
 
@@ -71,6 +71,9 @@ Phase 2: Federal Data ████░░░░ 3/6 complete
 | 1500 token chunk maximum | 2026-02-01 | Well under 8192 embedding limit, allows headroom for metadata | Active |
 | 15% overlap for chunk splitting | 2026-02-01 | Preserves cross-reference context between subsections | Active |
 | Section-level chunking granularity | 2026-02-01 | Respects legal structure, subsection split only when needed | Active |
+| 64-chunk batch size for embeddings | 2026-02-01 | OpenAI recommended batch size for text-embedding-3-large | Active |
+| 100ms delay between batches | 2026-02-01 | Conservative rate limit prevention | Active |
+| Exponential backoff for retries | 2026-02-01 | 1s, 2s, 4s, 8s delays handle transient rate limits | Active |
 
 ### Recent Changes
 
@@ -101,16 +104,17 @@ Phase 2: Federal Data ████░░░░ 3/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 02-04-PLAN.md: CFR Chunking Pipeline
-- Implemented structure-aware section chunking with subsection parsing
-- Built subsection splitting for oversized sections with 15% overlap
-- Added batch processing and statistics for monitoring
-- 1 commit: chunking implementation (both tasks in single file)
+- Completed 02-05-PLAN.md: Embedding Generation
+- Integrated OpenAI text-embedding-3-large (3072-dim vectors)
+- Implemented batch processing with 64-chunk batches and 100ms delays
+- Added exponential backoff retry logic for rate limits
+- Token validation prevents oversized chunks from causing API errors
+- 1 commit: embedding generation with retry logic
 
 ### What's Next
 1. Continue Phase 2: Federal Data
-2. Next plan: 02-05 (Embedding Generation)
-3. Then: 02-06 (Pinecone Upsert)
+2. Next plan: 02-06 (Pinecone Upsert)
+3. Then: Phase 2 complete, begin Phase 3 (Texas State Data)
 
 ---
 
