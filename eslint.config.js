@@ -11,6 +11,8 @@ export default [
       '**/build/**',
       '**/.next/**',
       '**/coverage/**',
+      '**/.wrangler/**',
+      '**/_generated/**',
       '.claude/**',
       '.planning/**',
       'doc_planning/**',

@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { v } from 'convex/values';
+import { query, mutation } from './_generated/server';
 
 /**
  * Jurisdictions: CRUD operations for regulatory bodies
@@ -12,24 +12,24 @@ export const list = query({
   args: {
     type: v.optional(
       v.union(
-        v.literal("federal"),
-        v.literal("state"),
-        v.literal("county"),
-        v.literal("city")
+        v.literal('federal'),
+        v.literal('state'),
+        v.literal('county'),
+        v.literal('city')
       )
     ),
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("jurisdictions");
+    let query = ctx.db.query('jurisdictions');
 
     if (args.type !== undefined) {
-      query = query.withIndex("by_type", (q) => q.eq("type", args.type));
+      query = query.withIndex('by_type', (q) => q.eq('type', args.type));
     }
 
     if (args.isActive !== undefined) {
-      query = query.withIndex("by_active", (q) =>
-        q.eq("isActive", args.isActive)
+      query = query.withIndex('by_active', (q) =>
+        q.eq('isActive', args.isActive)
       );
     }
 
@@ -41,7 +41,7 @@ export const list = query({
  * Get a single jurisdiction by ID
  */
 export const get = query({
-  args: { id: v.id("jurisdictions") },
+  args: { id: v.id('jurisdictions') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -54,10 +54,10 @@ export const add = mutation({
   args: {
     name: v.string(),
     type: v.union(
-      v.literal("federal"),
-      v.literal("state"),
-      v.literal("county"),
-      v.literal("city")
+      v.literal('federal'),
+      v.literal('state'),
+      v.literal('county'),
+      v.literal('city')
     ),
     stateCode: v.optional(v.string()),
     countyFips: v.optional(v.string()),
@@ -67,7 +67,7 @@ export const add = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    return await ctx.db.insert("jurisdictions", {
+    return await ctx.db.insert('jurisdictions', {
       name: args.name,
       type: args.type,
       stateCode: args.stateCode,
@@ -85,7 +85,7 @@ export const add = mutation({
  */
 export const updateStatus = mutation({
   args: {
-    id: v.id("jurisdictions"),
+    id: v.id('jurisdictions'),
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {

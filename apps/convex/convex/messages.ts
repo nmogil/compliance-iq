@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { v } from 'convex/values';
+import { query, mutation } from './_generated/server';
 
 /**
  * Messages: CRUD operations for conversation messages
@@ -10,15 +10,15 @@ import { query, mutation } from "./_generated/server";
  */
 export const byConversation = query({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("messages")
-      .withIndex("by_conversation", (q) =>
-        q.eq("conversationId", args.conversationId)
+      .query('messages')
+      .withIndex('by_conversation', (q) =>
+        q.eq('conversationId', args.conversationId)
       )
-      .order("asc")
+      .order('asc')
       .collect();
   },
 });
@@ -27,7 +27,7 @@ export const byConversation = query({
  * Get a single message by ID
  */
 export const get = query({
-  args: { id: v.id("messages") },
+  args: { id: v.id('messages') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -38,20 +38,20 @@ export const get = query({
  */
 export const send = mutation({
   args: {
-    conversationId: v.id("conversations"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    conversationId: v.id('conversations'),
+    role: v.union(
+      v.literal('user'),
+      v.literal('assistant'),
+      v.literal('system')
+    ),
     content: v.string(),
     status: v.optional(
-      v.union(
-        v.literal("pending"),
-        v.literal("complete"),
-        v.literal("error")
-      )
+      v.union(v.literal('pending'), v.literal('complete'), v.literal('error'))
     ),
     citations: v.optional(
       v.array(
         v.object({
-          sourceId: v.id("sources"),
+          sourceId: v.id('sources'),
           sectionNumber: v.string(),
           title: v.string(),
           url: v.string(),
@@ -68,11 +68,11 @@ export const send = mutation({
       updatedAt: now,
     });
 
-    return await ctx.db.insert("messages", {
+    return await ctx.db.insert('messages', {
       conversationId: args.conversationId,
       role: args.role,
       content: args.content,
-      status: args.status ?? "complete",
+      status: args.status ?? 'complete',
       citations: args.citations,
       createdAt: now,
       updatedAt: now,
@@ -85,17 +85,17 @@ export const send = mutation({
  */
 export const updateStatus = mutation({
   args: {
-    id: v.id("messages"),
+    id: v.id('messages'),
     status: v.union(
-      v.literal("pending"),
-      v.literal("complete"),
-      v.literal("error")
+      v.literal('pending'),
+      v.literal('complete'),
+      v.literal('error')
     ),
     content: v.optional(v.string()),
     citations: v.optional(
       v.array(
         v.object({
-          sourceId: v.id("sources"),
+          sourceId: v.id('sources'),
           sectionNumber: v.string(),
           title: v.string(),
           url: v.string(),

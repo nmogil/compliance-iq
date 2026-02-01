@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { v } from 'convex/values';
+import { query, mutation } from './_generated/server';
 
 /**
  * Conversations: CRUD operations for user chat sessions
@@ -14,9 +14,9 @@ export const list = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("conversations")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .order("desc")
+      .query('conversations')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .order('desc')
       .collect();
   },
 });
@@ -25,7 +25,7 @@ export const list = query({
  * Get a single conversation by ID
  */
 export const get = query({
-  args: { id: v.id("conversations") },
+  args: { id: v.id('conversations') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -42,7 +42,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    return await ctx.db.insert("conversations", {
+    return await ctx.db.insert('conversations', {
       userId: args.userId,
       title: args.title,
       createdAt: now,
@@ -56,7 +56,7 @@ export const create = mutation({
  */
 export const updateTitle = mutation({
   args: {
-    id: v.id("conversations"),
+    id: v.id('conversations'),
     title: v.string(),
   },
   handler: async (ctx, args) => {
@@ -72,13 +72,13 @@ export const updateTitle = mutation({
  */
 export const remove = mutation({
   args: {
-    id: v.id("conversations"),
+    id: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     // Delete all messages in the conversation
     const messages = await ctx.db
-      .query("messages")
-      .withIndex("by_conversation", (q) => q.eq("conversationId", args.id))
+      .query('messages')
+      .withIndex('by_conversation', (q) => q.eq('conversationId', args.id))
       .collect();
 
     for (const message of messages) {

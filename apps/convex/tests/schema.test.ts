@@ -21,7 +21,13 @@ describe('Schema Types', () => {
   });
 
   it('should define message status correctly', () => {
-    const validStatuses = ['pending', 'processing', 'streaming', 'complete', 'error'];
+    const validStatuses = [
+      'pending',
+      'processing',
+      'streaming',
+      'complete',
+      'error',
+    ];
     expect(validStatuses).toHaveLength(5);
   });
 });

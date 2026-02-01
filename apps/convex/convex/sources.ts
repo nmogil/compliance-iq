@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { v } from 'convex/values';
+import { query, mutation } from './_generated/server';
 
 /**
  * Sources: CRUD operations for regulatory data sources
@@ -10,27 +10,27 @@ import { query, mutation } from "./_generated/server";
  */
 export const list = query({
   args: {
-    jurisdictionId: v.optional(v.id("jurisdictions")),
+    jurisdictionId: v.optional(v.id('jurisdictions')),
     status: v.optional(
       v.union(
-        v.literal("pending"),
-        v.literal("active"),
-        v.literal("complete"),
-        v.literal("error")
+        v.literal('pending'),
+        v.literal('active'),
+        v.literal('complete'),
+        v.literal('error')
       )
     ),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("sources");
+    let query = ctx.db.query('sources');
 
     if (args.jurisdictionId !== undefined) {
-      query = query.withIndex("by_jurisdiction", (q) =>
-        q.eq("jurisdictionId", args.jurisdictionId)
+      query = query.withIndex('by_jurisdiction', (q) =>
+        q.eq('jurisdictionId', args.jurisdictionId)
       );
     }
 
     if (args.status !== undefined) {
-      query = query.withIndex("by_status", (q) => q.eq("status", args.status));
+      query = query.withIndex('by_status', (q) => q.eq('status', args.status));
     }
 
     return await query.collect();
@@ -41,7 +41,7 @@ export const list = query({
  * Get a single source by ID
  */
 export const get = query({
-  args: { id: v.id("sources") },
+  args: { id: v.id('sources') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -52,33 +52,33 @@ export const get = query({
  */
 export const add = mutation({
   args: {
-    jurisdictionId: v.id("jurisdictions"),
+    jurisdictionId: v.id('jurisdictions'),
     name: v.string(),
     url: v.string(),
     sourceType: v.union(
-      v.literal("statutes"),
-      v.literal("regulations"),
-      v.literal("ordinances"),
-      v.literal("other")
+      v.literal('statutes'),
+      v.literal('regulations'),
+      v.literal('ordinances'),
+      v.literal('other')
     ),
     status: v.optional(
       v.union(
-        v.literal("pending"),
-        v.literal("active"),
-        v.literal("complete"),
-        v.literal("error")
+        v.literal('pending'),
+        v.literal('active'),
+        v.literal('complete'),
+        v.literal('error')
       )
     ),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    return await ctx.db.insert("sources", {
+    return await ctx.db.insert('sources', {
       jurisdictionId: args.jurisdictionId,
       name: args.name,
       url: args.url,
       sourceType: args.sourceType,
-      status: args.status ?? "pending",
+      status: args.status ?? 'pending',
       createdAt: now,
       updatedAt: now,
     });
@@ -90,12 +90,12 @@ export const add = mutation({
  */
 export const updateStatus = mutation({
   args: {
-    id: v.id("sources"),
+    id: v.id('sources'),
     status: v.union(
-      v.literal("pending"),
-      v.literal("active"),
-      v.literal("complete"),
-      v.literal("error")
+      v.literal('pending'),
+      v.literal('active'),
+      v.literal('complete'),
+      v.literal('error')
     ),
     lastScrapedAt: v.optional(v.number()),
   },
