@@ -20,16 +20,16 @@
 ## Current Position
 
 **Phase:** 2 of 10 (Federal Data) - IN PROGRESS
-**Plan:** 02-02 of 6 in phase
+**Plan:** 02-01 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 02-02-PLAN.md
+**Last activity:** 2026-02-01 - Completed 02-01-PLAN.md
 
 **Progress:**
 ```
-[███████░░░░░░░░░░░░░] 14% (7/12 plans complete across phases 1-2)
+[███████░░░░░░░░░░░░░] 12% (7/12 plans complete across phases 1-2)
 
 Phase 1: Foundation ████████ COMPLETE
-Phase 2: Federal Data ████░░░░ 2/6 complete
+Phase 2: Federal Data ██░░░░░░ 1/6 complete
 ```
 
 ---
@@ -38,7 +38,7 @@ Phase 2: Federal Data ████░░░░ 2/6 complete
 
 ### Velocity
 - Phases completed: 1/10
-- Plans completed: 7/12 (Phase 1 + Phase 2 partial)
+- Plans completed: 7/12 (Phase 1: 6/6, Phase 2: 1/6)
 - Requirements delivered: 0/28 (infrastructure phase)
 - Days since start: 1
 
@@ -63,8 +63,9 @@ Phase 2: Federal Data ████░░░░ 2/6 complete
 | ESLint 9 flat config | 2026-01-31 | Modern format, more flexible | Active |
 | Tailwind 4.x | 2026-02-01 | Latest with Vite plugin | Active |
 | Vitest workspace mode | 2026-02-01 | Native pnpm workspace support | Active |
-| eCFR exponential backoff retry | 2026-02-01 | 3 retries with 1s/2s/4s delays handles rate limits gracefully | Active |
-| Combined fetch+parse module | 2026-02-01 | Tight coupling between API responses and parsing logic | Active |
+| Token target 1500 for embeddings | 2026-02-01 | Well under 8192 limit, allows headroom for metadata | Active |
+| Bluebook citation format | 2026-02-01 | Standard legal format lawyers expect | Active |
+| 7 target CFR titles | 2026-02-01 | Covers retail compliance needs (food, alcohol, labor, fuel) | Active |
 
 ### Recent Changes
 
@@ -95,16 +96,17 @@ Phase 2: Federal Data ████░░░░ 2/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 02-02-PLAN.md: eCFR API Integration
-- Built eCFR API client with retry logic (fetchCFRTitle, fetchCFRTitleList, fetchCFRPart)
-- Implemented XML parser for CFR structure (parseCFRXML, extractParts, extractSections)
-- Updated Env types with OPENAI_API_KEY, PINECONE_API_KEY, CONVEX_URL
-- 2 commits: environment setup, API fetcher module
+- Completed 02-01-PLAN.md: Federal Data Foundation
+- Created CFR type system with 7 target titles and category mappings
+- Built token counting utilities using cl100k_base encoding
+- Implemented Bluebook citation generator for CFR references
+- Installed dependencies: js-tiktoken, fast-xml-parser, date-fns, zod
+- 3 commits: types, token counting, citation generation
 
 ### What's Next
 1. Continue Phase 2: Federal Data
-2. Next plan: 02-03 (R2 Storage for raw CFR XML)
-3. Then: 02-04 (Chunking), 02-05 (Embedding), 02-06 (Pinecone indexing)
+2. Next plan: 02-02 (eCFR API Integration)
+3. Then: 02-03 (R2 Storage), 02-04 (Chunking), 02-05 (Embedding), 02-06 (Pinecone)
 
 ---
 
