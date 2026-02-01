@@ -12,6 +12,13 @@
     }
   ],
 
+  // Secrets (configured via wrangler secret put)
+  // These are NOT stored in source control.
+  // To set secrets:
+  //   wrangler secret put OPENAI_API_KEY
+  //   wrangler secret put PINECONE_API_KEY
+  //   wrangler secret put CONVEX_URL
+
   // Local development settings
   "dev": {
     "port": 8787
