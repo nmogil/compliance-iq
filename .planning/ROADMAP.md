@@ -81,12 +81,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Types and utilities (tokens, citations, CFR data structures)
-- [ ] 02-02-PLAN.md -- eCFR API integration (fetcher, XML parser)
-- [ ] 02-03-PLAN.md -- R2 storage pipeline (raw XML, checkpointing)
-- [ ] 02-04-PLAN.md -- Chunking pipeline (section-level, Bluebook citations)
-- [ ] 02-05-PLAN.md -- Embedding pipeline (OpenAI text-embedding-3-large)
-- [ ] 02-06-PLAN.md -- Pipeline orchestration and HTTP trigger
+- [x] 02-01-PLAN.md -- Types and utilities (tokens, citations, CFR data structures)
+- [x] 02-02-PLAN.md -- eCFR API integration (fetcher, XML parser)
+- [x] 02-03-PLAN.md -- R2 storage pipeline (raw XML, checkpointing)
+- [x] 02-04-PLAN.md -- Chunking pipeline (section-level, Bluebook citations)
+- [x] 02-05-PLAN.md -- Embedding pipeline (OpenAI text-embedding-3-large)
+- [x] 02-06-PLAN.md -- Pipeline orchestration and HTTP trigger
 
 **Requirements Covered:**
 - DATA-01: eCFR API integration returns federal regulation text with citations
@@ -335,7 +335,7 @@ Plans:
 | Phase | Status | Start Date | End Date | Requirements |
 |-------|--------|------------|----------|--------------|
 | 1 - Foundation | Complete | 2026-01-31 | 2026-02-01 | -- |
-| 2 - Federal Data | Pending | TBD | TBD | 6 |
+| 2 - Federal Data | Complete | 2026-02-01 | 2026-02-01 | 6 |
 | 3 - State Data | Pending | TBD | TBD | 4 |
 | 4 - County Data | Pending | TBD | TBD | 2 |
 | 5 - Municipal Data | Pending | TBD | TBD | 3 |

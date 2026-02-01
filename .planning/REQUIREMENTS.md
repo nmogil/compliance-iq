@@ -9,16 +9,16 @@ Requirements for Texas pilot. Each maps to roadmap phases.
 
 ### Data Pipeline
 
-- [ ] **DATA-01**: eCFR API integration returns federal regulation text with citations
+- [x] **DATA-01**: eCFR API integration returns federal regulation text with citations
 - [ ] **DATA-02**: Texas Statutes scraper extracts all 28 codes with section-level granularity
 - [ ] **DATA-03**: Texas Administrative Code scraper extracts relevant titles (16, 22, 25, 30, 37)
 - [ ] **DATA-04**: Municode scraper extracts ordinances from 15+ Texas cities
 - [ ] **DATA-05**: American Legal scraper extracts ordinances from Dallas, Fort Worth, Austin
 - [ ] **DATA-06**: County regulation scraper extracts from top 10 Texas counties
-- [ ] **DATA-07**: Chunking pipeline splits regulatory text into embeddable segments with metadata
-- [ ] **DATA-08**: Embedding pipeline generates vectors via OpenAI text-embedding-3-large
-- [ ] **DATA-09**: Pinecone index stores vectors with jurisdiction/activity/citation metadata
-- [ ] **DATA-10**: R2 storage persists raw scraped documents for audit/reprocessing
+- [x] **DATA-07**: Chunking pipeline splits regulatory text into embeddable segments with metadata
+- [x] **DATA-08**: Embedding pipeline generates vectors via OpenAI text-embedding-3-large
+- [x] **DATA-09**: Pinecone index stores vectors with jurisdiction/activity/citation metadata
+- [x] **DATA-10**: R2 storage persists raw scraped documents for audit/reprocessing
 
 ### Query Interface
 
@@ -41,7 +41,7 @@ Requirements for Texas pilot. Each maps to roadmap phases.
 
 ### Coverage
 
-- [ ] **COV-01**: Federal regulations covering Costco business activities (food, alcohol, pharmacy, fuel, employment)
+- [x] **COV-01**: Federal regulations covering Costco business activities (food, alcohol, pharmacy, fuel, employment)
 - [ ] **COV-02**: Texas state statutes relevant to retail operations
 - [ ] **COV-03**: Texas Administrative Code for licensing boards (pharmacy, optometry, alcohol)
 - [ ] **COV-04**: Top 10 Texas counties by Costco presence (Harris, Dallas, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso)
