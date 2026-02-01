@@ -120,12 +120,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Types, Texas citation generators, and Cheerio dependency
-- [ ] 03-02-PLAN.md -- Scraper utilities (rate limiting, retry, exponential backoff)
-- [ ] 03-03-PLAN.md -- Texas Statutes fetcher and HTML parser
-- [ ] 03-04-PLAN.md -- Texas Statutes storage and chunking pipeline
-- [ ] 03-05-PLAN.md -- Texas Administrative Code fetcher and HTML parser
-- [ ] 03-06-PLAN.md -- Texas pipeline orchestration and HTTP endpoints
+- [x] 03-01-PLAN.md -- Types, Texas citation generators, and Cheerio dependency
+- [x] 03-02-PLAN.md -- Scraper utilities (rate limiting, retry, exponential backoff)
+- [x] 03-03-PLAN.md -- Texas Statutes fetcher and HTML parser
+- [x] 03-04-PLAN.md -- Texas Statutes storage and chunking pipeline
+- [x] 03-05-PLAN.md -- Texas Administrative Code fetcher and HTML parser
+- [x] 03-06-PLAN.md -- Texas pipeline orchestration and HTTP endpoints
 
 **Requirements Covered:**
 - DATA-02: Texas Statutes scraper extracts all 28 codes with section-level granularity
@@ -346,7 +346,7 @@ Plans:
 |-------|--------|------------|----------|--------------|
 | 1 - Foundation | Complete | 2026-01-31 | 2026-02-01 | -- |
 | 2 - Federal Data | Complete | 2026-02-01 | 2026-02-01 | 6 |
-| 3 - State Data | Pending | TBD | TBD | 4 |
+| 3 - State Data | Complete | 2026-02-01 | 2026-02-01 | 4 |
 | 4 - County Data | Pending | TBD | TBD | 2 |
 | 5 - Municipal Data | Pending | TBD | TBD | 3 |
 | 6 - Data Processing | Pending | TBD | TBD | 4 (validation) |
@@ -370,4 +370,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-01-31*
+*Last updated: 2026-02-01*

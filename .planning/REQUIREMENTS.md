@@ -10,8 +10,8 @@ Requirements for Texas pilot. Each maps to roadmap phases.
 ### Data Pipeline
 
 - [x] **DATA-01**: eCFR API integration returns federal regulation text with citations
-- [ ] **DATA-02**: Texas Statutes scraper extracts all 28 codes with section-level granularity
-- [ ] **DATA-03**: Texas Administrative Code scraper extracts relevant titles (16, 22, 25, 30, 37)
+- [x] **DATA-02**: Texas Statutes scraper extracts all 28 codes with section-level granularity
+- [x] **DATA-03**: Texas Administrative Code scraper extracts relevant titles (16, 22, 25, 30, 37)
 - [ ] **DATA-04**: Municode scraper extracts ordinances from 15+ Texas cities
 - [ ] **DATA-05**: American Legal scraper extracts ordinances from Dallas, Fort Worth, Austin
 - [ ] **DATA-06**: County regulation scraper extracts from top 10 Texas counties
@@ -42,8 +42,8 @@ Requirements for Texas pilot. Each maps to roadmap phases.
 ### Coverage
 
 - [x] **COV-01**: Federal regulations covering Costco business activities (food, alcohol, pharmacy, fuel, employment)
-- [ ] **COV-02**: Texas state statutes relevant to retail operations
-- [ ] **COV-03**: Texas Administrative Code for licensing boards (pharmacy, optometry, alcohol)
+- [x] **COV-02**: Texas state statutes relevant to retail operations
+- [x] **COV-03**: Texas Administrative Code for licensing boards (pharmacy, optometry, alcohol)
 - [ ] **COV-04**: Top 10 Texas counties by Costco presence (Harris, Dallas, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso)
 - [ ] **COV-05**: Top 20 Texas cities by Costco presence (Houston, San Antonio, Dallas, Austin, Fort Worth, El Paso, Arlington, Plano, Corpus Christi, Lubbock, Laredo, Irving, Garland, Frisco, McKinney, Amarillo, Grand Prairie, Brownsville, Killeen, Pasadena)
 
@@ -92,16 +92,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 2 | Pending |
-| DATA-02 | Phase 3 | Pending |
-| DATA-03 | Phase 3 | Pending |
+| DATA-01 | Phase 2 | Complete |
+| DATA-02 | Phase 3 | Complete |
+| DATA-03 | Phase 3 | Complete |
 | DATA-04 | Phase 5 | Pending |
 | DATA-05 | Phase 5 | Pending |
 | DATA-06 | Phase 4 | Pending |
-| DATA-07 | Phase 2, validated in Phase 6 | Pending |
-| DATA-08 | Phase 2, validated in Phase 6 | Pending |
-| DATA-09 | Phase 2, validated in Phase 6 | Pending |
-| DATA-10 | Phase 2, validated in Phase 6 | Pending |
+| DATA-07 | Phase 2, validated in Phase 6 | Complete |
+| DATA-08 | Phase 2, validated in Phase 6 | Complete |
+| DATA-09 | Phase 2, validated in Phase 6 | Complete |
+| DATA-10 | Phase 2, validated in Phase 6 | Complete |
 | QUERY-01 | Phase 7 | Pending |
 | QUERY-02 | Phase 7 | Pending |
 | QUERY-03 | Phase 7 | Pending |
@@ -115,9 +115,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | APP-04 | Phase 8 | Pending |
 | APP-05 | Phase 9 | Pending |
 | APP-06 | Phase 8 | Pending |
-| COV-01 | Phase 2 (validated) | Pending |
-| COV-02 | Phase 3 (validated) | Pending |
-| COV-03 | Phase 3 (validated) | Pending |
+| COV-01 | Phase 2 (validated) | Complete |
+| COV-02 | Phase 3 (validated) | Complete |
+| COV-03 | Phase 3 (validated) | Complete |
 | COV-04 | Phase 4 (validated) | Pending |
 | COV-05 | Phase 5 (validated) | Pending |
 
@@ -132,4 +132,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after roadmap creation - all requirements mapped to phases*
+*Last updated: 2026-02-01 - Phase 3 complete (DATA-02, DATA-03, COV-02, COV-03)*
