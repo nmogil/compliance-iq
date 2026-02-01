@@ -22,15 +22,15 @@
 **Phase:** 3 of 10 (State Data)
 **Plan:** 5 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 03-05-PLAN.md
+**Last activity:** 2026-02-01 - Completed 03-04-PLAN.md
 
 **Progress:**
 ```
-[█████████████░░░░░░░] 27% (16/60 plans complete)
+[█████████████░░░░░░░] 28% (17/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
-Phase 3: State Data ████░░░░ 4/6 complete
+Phase 3: State Data █████░░░ 5/6 complete
 ```
 
 ---
@@ -39,7 +39,7 @@ Phase 3: State Data ████░░░░ 4/6 complete
 
 ### Velocity
 - Phases completed: 2/10
-- Plans completed: 16/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 4/6)
+- Plans completed: 17/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 5/6)
 - Requirements delivered: 6/28 (DATA-01, DATA-07-10, COV-01)
 - Days since start: 1
 
@@ -96,6 +96,9 @@ Phase 3: State Data ████░░░░ 4/6 complete
 | Discovery functions for TAC navigation | 2026-02-01 | Parse TOC pages to find chapters/rules vs brute-force URL attempts | Active |
 | Flexible TAC selectors | 2026-02-01 | Multiple selector strategies handle HTML structure variations across titles | Active |
 | AsyncGenerator for TAC title fetching | 2026-02-01 | Yields rules one at a time for constant memory usage | Active |
+| Texas R2 folder structure | 2026-02-01 | texas/statutes/{code}/chapter-{chapter}/{section}.html hierarchy | Active |
+| Texas checkpoint per source type | 2026-02-01 | Separate checkpoints for statute and tac source types | Active |
+| TAC R2 folder structure | 2026-02-01 | texas/tac/title-{title}/chapter-{chapter}/{section}.html hierarchy | Active |
 
 ### Recent Changes
 
@@ -132,20 +135,19 @@ Phase 3: State Data ████░░░░ 4/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-05-PLAN.md: TAC Scraper
-- Created Cheerio-based TAC HTML parser with flexible selectors for sos.state.tx.us
-- Implemented TAC fetcher with rate limiting and title/chapter/rule discovery
-- Built unified chunking module for both statutes and TAC rules
-- Added subsection-aware chunking with 15% overlap for large sections
-- AsyncGenerator pattern for memory-efficient title streaming
-- 3 commits: parse-tac + fetch-tac + chunk + exports
+- Completed 03-04-PLAN.md: Texas Storage
+- Created texas/storage.ts with R2 storage for statutes and TAC
+- Implemented 8 storage functions: storeTexasStatute, getTexasStatute, listTexasStatuteSections, saveTexasCheckpoint, loadTexasCheckpoint, clearTexasCheckpoint, storeTACRule, getTACRule
+- R2 folder structure: texas/statutes/{code}/chapter-{chapter}/ and texas/tac/title-{title}/chapter-{chapter}/
+- Checkpoint management: texas/checkpoints/statute.json and texas/checkpoints/tac.json
+- Updated texas/index.ts with storage exports
+- 2 commits: storage module + exports
 
 ### What's Next
 1. Continue Phase 3: Texas State Data
-2. Next plan: R2 storage for Texas regulations (03-04) or Pipeline orchestration (03-06)
-3. Then: TAC scraper for Texas Administrative Code
-4. Then: Pipeline orchestration for Texas
-5. Before production: Configure Pinecone API key and Convex URL in Workers secrets
+2. Next plan: Pipeline orchestration (03-06)
+3. Then: Complete Phase 3
+4. Before production: Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
 
@@ -215,9 +217,16 @@ Phase 3: State Data ████░░░░ 4/6 complete
   - tx-statute and tx-tac sourceTypes
   - Proper Bluebook citations for both types
   - getTexasChunkStats for monitoring chunk quality
+- **Texas Storage (03-04):** R2 storage and checkpoint management
+  - storeTexasStatute, getTexasStatute, listTexasStatuteSections for statutes
+  - storeTACRule, getTACRule for TAC rules
+  - saveTexasCheckpoint, loadTexasCheckpoint, clearTexasCheckpoint
+  - R2 folder structure: texas/statutes/{code}/chapter-{chapter}/
+  - R2 folder structure: texas/tac/title-{title}/chapter-{chapter}/
+  - Checkpoint storage: texas/checkpoints/{sourceType}.json
+  - Mirrors federal/storage.ts patterns
 
 **Remaining:**
-- R2 storage for Texas regulations (03-04)
 - Pipeline orchestration (03-06)
 
 ---
