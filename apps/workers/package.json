@@ -12,6 +12,7 @@
   "dependencies": {
     "@compliance-iq/shared-types": "workspace:*",
     "@pinecone-database/pinecone": "^6.1.4",
+    "cheerio": "^1.2.0",
     "date-fns": "^4.1.0",
     "fast-xml-parser": "^5.3.4",
     "js-tiktoken": "^1.0.21",
