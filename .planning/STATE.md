@@ -20,16 +20,16 @@
 ## Current Position
 
 **Phase:** 2 of 10 (Federal Data) - IN PROGRESS
-**Plan:** 02-01 of 6 in phase
+**Plan:** 02-03 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-01 - Completed 02-01-PLAN.md
+**Last activity:** 2026-02-01 - Completed 02-03-PLAN.md
 
 **Progress:**
 ```
-[███████░░░░░░░░░░░░░] 12% (7/12 plans complete across phases 1-2)
+[████████░░░░░░░░░░░░] 14% (8/12 plans complete across phases 1-2)
 
 Phase 1: Foundation ████████ COMPLETE
-Phase 2: Federal Data ██░░░░░░ 1/6 complete
+Phase 2: Federal Data ███░░░░░ 2/6 complete
 ```
 
 ---
@@ -38,7 +38,7 @@ Phase 2: Federal Data ██░░░░░░ 1/6 complete
 
 ### Velocity
 - Phases completed: 1/10
-- Plans completed: 7/12 (Phase 1: 6/6, Phase 2: 1/6)
+- Plans completed: 8/12 (Phase 1: 6/6, Phase 2: 2/6)
 - Requirements delivered: 0/28 (infrastructure phase)
 - Days since start: 1
 
@@ -66,6 +66,8 @@ Phase 2: Federal Data ██░░░░░░ 1/6 complete
 | Token target 1500 for embeddings | 2026-02-01 | Well under 8192 limit, allows headroom for metadata | Active |
 | Bluebook citation format | 2026-02-01 | Standard legal format lawyers expect | Active |
 | 7 target CFR titles | 2026-02-01 | Covers retail compliance needs (food, alcohol, labor, fuel) | Active |
+| R2 folder structure for CFR | 2026-02-01 | federal/cfr/title-X/part-Y.xml hierarchy | Active |
+| Pipeline checkpointing per title | 2026-02-01 | Enables resume from failures without re-fetching | Active |
 
 ### Recent Changes
 
@@ -96,17 +98,16 @@ Phase 2: Federal Data ██░░░░░░ 1/6 complete
 ## Session Continuity
 
 ### What Just Happened
-- Completed 02-01-PLAN.md: Federal Data Foundation
-- Created CFR type system with 7 target titles and category mappings
-- Built token counting utilities using cl100k_base encoding
-- Implemented Bluebook citation generator for CFR references
-- Installed dependencies: js-tiktoken, fast-xml-parser, date-fns, zod
-- 3 commits: types, token counting, citation generation
+- Completed 02-03-PLAN.md: R2 Storage Pipeline
+- Created generic R2 storage utilities with metadata support
+- Built federal-specific CFR storage with organized folder structure
+- Implemented pipeline checkpoint save/load for resilience
+- 2 commits: R2 utilities, federal storage
 
 ### What's Next
 1. Continue Phase 2: Federal Data
-2. Next plan: 02-02 (eCFR API Integration)
-3. Then: 02-03 (R2 Storage), 02-04 (Chunking), 02-05 (Embedding), 02-06 (Pinecone)
+2. Next plan: 02-04 (Chunking Pipeline)
+3. Then: 02-05 (Embedding), 02-06 (Pinecone)
 
 ---
 
