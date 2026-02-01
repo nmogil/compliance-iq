@@ -28,8 +28,17 @@ export {
   type TACChunkContext,
 } from './chunk';
 
-// Future: Storage (03-04)
-// export { storeTexasStatute, saveTexasCheckpoint } from './storage';
+// Storage and checkpointing
+export {
+  storeTexasStatute,
+  getTexasStatute,
+  listTexasStatuteSections,
+  saveTexasCheckpoint,
+  loadTexasCheckpoint,
+  clearTexasCheckpoint,
+  storeTACRule,
+  getTACRule,
+} from './storage';
 
 // Future: Pipeline orchestrator (03-06)
 // export { processTexasStatutes, processAllTexasSources } from './pipeline';
