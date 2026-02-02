@@ -428,3 +428,217 @@ export function generateTexasHierarchy(
     ];
   }
 }
+
+// ============================================================================
+// County Citation Utilities
+// ============================================================================
+
+import { format } from 'date-fns';
+
+import type { CountySourceConfig } from '../counties/types';
+
+/**
+ * Generate Bluebook-format county ordinance citation
+ *
+ * Based on Bluebook Rule 12.9.2: Municipal ordinances cited analogously to statutes.
+ * Format: [County Name] County, Tex., [Code Name] sect. [section] ([year])
+ *
+ * @param county County name (e.g., "Harris", "Dallas")
+ * @param codeName Code name (e.g., "County Code", "Code of Ordinances")
+ * @param section Section number (e.g., "1.02", "2.03.040")
+ * @param year Publication year (defaults to current year)
+ * @returns Bluebook citation string
+ *
+ * @example
+ * ```ts
+ * generateCountyCitation('Harris', 'County Code', '1.02', 2026)
+ * // => "Harris County, Tex., County Code sect. 1.02 (2026)"
+ *
+ * generateCountyCitation('Dallas', 'Code of Ordinances', '2.03.040')
+ * // => "Dallas County, Tex., Code of Ordinances sect. 2.03.040 (2026)"
+ * ```
+ */
+export function generateCountyCitation(
+  county: string,
+  codeName: string,
+  section: string,
+  year?: number
+): string {
+  const citationYear = year ?? new Date().getFullYear();
+  return `${county} County, Tex., ${codeName} sect. ${section} (${citationYear})`;
+}
+
+/**
+ * Generate Bluebook-format commissioners court order citation
+ *
+ * Format: [County Name] County Commissioners Court Order No. [number] ([date])
+ *
+ * @param county County name (e.g., "Tarrant", "Harris")
+ * @param orderNumber Order number/identifier (e.g., "2026-045", "O-23-1234")
+ * @param adoptionDate Date the order was adopted
+ * @returns Bluebook citation string
+ *
+ * @example
+ * ```ts
+ * generateCourtOrderCitation('Tarrant', '2026-045', new Date('2026-03-15'))
+ * // => "Tarrant County Commissioners Court Order No. 2026-045 (Mar. 15, 2026)"
+ *
+ * generateCourtOrderCitation('Harris', 'O-24-0567', new Date('2024-11-05'))
+ * // => "Harris County Commissioners Court Order No. O-24-0567 (Nov. 5, 2024)"
+ * ```
+ */
+export function generateCourtOrderCitation(
+  county: string,
+  orderNumber: string,
+  adoptionDate: Date
+): string {
+  // Format date as "MMM. d, yyyy" (e.g., "Mar. 15, 2026")
+  const dateStr = format(adoptionDate, 'MMM. d, yyyy');
+  return `${county} County Commissioners Court Order No. ${orderNumber} (${dateStr})`;
+}
+
+/**
+ * Generate URL for county ordinance based on platform
+ *
+ * Handles platform-specific URL patterns for Municode, eLaws, and American Legal.
+ *
+ * @param config County source configuration
+ * @param section Optional section number for deep linking
+ * @returns URL to county ordinance (base URL or section-specific)
+ * @throws Error if county has no online source configured
+ *
+ * @example
+ * ```ts
+ * const harrisConfig = { platform: 'municode', baseUrl: 'https://library.municode.com/tx/harris_county/codes/code_of_ordinances' };
+ *
+ * generateCountyOrdinanceUrl(harrisConfig)
+ * // => "https://library.municode.com/tx/harris_county/codes/code_of_ordinances"
+ *
+ * generateCountyOrdinanceUrl(harrisConfig, '1.02')
+ * // => "https://library.municode.com/tx/harris_county/codes/code_of_ordinances?nodeId=1.02"
+ *
+ * const dallasConfig = { platform: 'elaws', baseUrl: 'http://dallascounty-tx.elaws.us/code/coor' };
+ *
+ * generateCountyOrdinanceUrl(dallasConfig, '2.03.040')
+ * // => "http://dallascounty-tx.elaws.us/code/coor#2.03.040"
+ * ```
+ */
+export function generateCountyOrdinanceUrl(
+  config: Pick<CountySourceConfig, 'name' | 'platform' | 'baseUrl'>,
+  section?: string
+): string {
+  if (!config.baseUrl) {
+    throw new Error(`County ${config.name} has no online source configured`);
+  }
+
+  // Return base URL if no section specified
+  if (!section) {
+    return config.baseUrl;
+  }
+
+  // Platform-specific URL construction
+  switch (config.platform) {
+    case 'municode':
+      // Municode uses nodeId parameter for sections
+      return `${config.baseUrl}?nodeId=${encodeURIComponent(section)}`;
+
+    case 'elaws':
+      // eLaws uses hash fragment for sections
+      return `${config.baseUrl}#${encodeURIComponent(section)}`;
+
+    case 'amlegal':
+      // American Legal uses nodeId in path
+      return `${config.baseUrl}/codes/overview?nodeId=${encodeURIComponent(section)}`;
+
+    case 'custom':
+    case 'court-orders':
+    default:
+      // For custom or court orders, just return base URL with section as hash
+      return `${config.baseUrl}#${encodeURIComponent(section)}`;
+  }
+}
+
+/**
+ * Generate a unique chunk ID for a county ordinance chunk
+ *
+ * Format: county-{county}-{chapter}-{section}-{chunkIndex}
+ *
+ * @param county County name (lowercase, hyphenated for spaces)
+ * @param chapter Chapter number
+ * @param section Section number
+ * @param chunkIndex Index of chunk within section (0-based)
+ * @returns Unique chunk identifier
+ *
+ * @example
+ * ```ts
+ * generateCountyChunkId('Harris', '1', '1.02', 0)
+ * // => "county-harris-1-1.02-0"
+ *
+ * generateCountyChunkId('Fort Bend', '2', '2.03.040', 1)
+ * // => "county-fort-bend-2-2.03.040-1"
+ * ```
+ */
+export function generateCountyChunkId(
+  county: string,
+  chapter: string,
+  section: string,
+  chunkIndex: number
+): string {
+  const normalizedCounty = county.toLowerCase().replace(/\s+/g, '-');
+  return `county-${normalizedCounty}-${chapter}-${section}-${chunkIndex}`;
+}
+
+/**
+ * Generate source ID for a county
+ *
+ * Format: county-{county}
+ *
+ * @param county County name (lowercase, hyphenated for spaces)
+ * @returns Source identifier
+ *
+ * @example
+ * ```ts
+ * generateCountySourceId('Harris')
+ * // => "county-harris"
+ *
+ * generateCountySourceId('Fort Bend')
+ * // => "county-fort-bend"
+ * ```
+ */
+export function generateCountySourceId(county: string): string {
+  const normalizedCounty = county.toLowerCase().replace(/\s+/g, '-');
+  return `county-${normalizedCounty}`;
+}
+
+/**
+ * Generate hierarchy breadcrumbs for county ordinances
+ *
+ * Creates a breadcrumb array showing the full regulatory path,
+ * useful for providing context in vector search results.
+ *
+ * @param county County name
+ * @param chapter Chapter number or identifier
+ * @param section Section number
+ * @returns Array of hierarchy strings
+ *
+ * @example
+ * ```ts
+ * generateCountyHierarchy('Harris', '1', '1.02')
+ * // => ["Texas Counties", "Harris County", "Chapter 1", "Section 1.02"]
+ *
+ * generateCountyHierarchy('Fort Bend', '2', '2.03.040')
+ * // => ["Texas Counties", "Fort Bend County", "Chapter 2", "Section 2.03.040"]
+ * ```
+ */
+export function generateCountyHierarchy(
+  county: string,
+  chapter: string,
+  section: string
+): string[] {
+  return [
+    'Texas Counties',
+    `${county} County`,
+    `Chapter ${chapter}`,
+    `Section ${section}`,
+  ];
+}
