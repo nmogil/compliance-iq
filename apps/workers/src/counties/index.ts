@@ -51,3 +51,22 @@ export {
   clearCountyCheckpoint,
   getCountyStorageStats,
 } from './storage';
+
+// Chunking
+export {
+  chunkCountyOrdinance,
+  chunkCounty,
+  getCountyChunkStats,
+  splitWithOverlap,
+  getOverlapText,
+} from './chunk';
+export type { CountyChunkContext } from './chunk';
+
+// Fetch orchestrator
+export {
+  fetchCountyOrdinances,
+  fetchAllEnabledCounties,
+  validateCountySources,
+  getFetchStats,
+} from './fetch';
+export type { CountyFetchResult, AllCountiesFetchResult } from './fetch';
