@@ -19,19 +19,20 @@
 
 ## Current Position
 
-**Phase:** 4 of 10 (County Data) COMPLETE
-**Plan:** 6 of 6 in phase
-**Status:** Phase complete
-**Last activity:** 2026-02-02 - Completed 04-06-PLAN.md
+**Phase:** 5 of 10 (Municipal Data)
+**Plan:** 3 of 6 in phase (05-01 also complete)
+**Status:** In progress
+**Last activity:** 2026-02-02 - Completed 05-03-PLAN.md (storage module)
 
 **Progress:**
 ```
-[████████████████████] 40% (24/60 plans complete)
+[████████████████████████] 42% (25/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
+Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
 ```
 
 ---
@@ -128,6 +129,12 @@ Phase 4: County Data ████████ COMPLETE (6/6)
 | by_county_fips Convex index | 2026-02-02 | Efficient FIPS code lookup without full table scan | Active |
 | Convex status field for jurisdictions | 2026-02-02 | Track pending/active/error pipeline state | Active |
 | Coverage report markdown format | 2026-02-02 | Human-readable documentation of county processing | Active |
+| 20 Texas cities for municipal scraping | 2026-02-02 | Top 20 cities by population: 17 Municode, 3 American Legal | Active |
+| Firecrawl for municipal scraping | 2026-02-02 | Unified approach for JavaScript-rendered Municode and American Legal sites | Active |
+| Municipal R2 folder structure | 2026-02-02 | municipal/{cityId}/chapter-{chapter}/{section}.json hierarchy | Active |
+| Single municipal checkpoint | 2026-02-02 | All cities share municipal/checkpoints/municipal.json | Active |
+| Markdown cache for Firecrawl | 2026-02-02 | Cache raw markdown in R2 to minimize Firecrawl credit usage | Active |
+| maxAgeMs cache expiration | 2026-02-02 | Markdown cache supports age-based invalidation | Active |
 
 ### Recent Changes
 
@@ -164,19 +171,22 @@ Phase 4: County Data ████████ COMPLETE (6/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-06-PLAN.md: County Endpoints and Coverage
-- Added 4 HTTP endpoints for county pipeline (batch, single, status, validate)
-- Updated Convex schema with status, lastScrapedAt, vectorCount, error fields
-- Created 4 Convex functions for county coverage tracking
-- Built coverage report generator with JSON and markdown output
-- Created test script for validating Pinecone jurisdiction filtering
-- 4 commits: endpoints, Convex update, coverage report, test script
+- Completed 05-03-PLAN.md: Municipal Storage Module
+- Verified storage.ts with 10 R2 storage functions (created as part of 05-01)
+- Created 05-03-SUMMARY.md documenting storage module
+- Storage functions: storeMunicipalOrdinance, getMunicipalOrdinance, listMunicipalOrdinances, storeMunicipalOrdinances, storeMunicipalMarkdown, getMunicipalMarkdown, saveMunicipalCheckpoint, loadMunicipalCheckpoint, clearMunicipalCheckpoint, getMunicipalStorageStats
+- R2 folder structure: municipal/{cityId}/chapter-{chapter}/{section}.json
+- Markdown cache at municipal/{cityId}/raw/page.md with maxAgeMs expiration
 
 ### What's Next
-1. Phase 5: Ingestion API (admin interface for data management)
+1. Continue Phase 5 Municipal Data:
+   - 05-02: Scraper/parser with Firecrawl
+   - 05-04: Chunking module
+   - 05-05: Pipeline orchestration
+   - 05-06: HTTP endpoints and coverage
 2. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
-   - Investigate Municode API endpoints for full SPA scraping
+   - Configure Firecrawl API key in Workers secrets
    - Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
