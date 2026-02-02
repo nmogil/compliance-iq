@@ -41,7 +41,7 @@ Phase 4: County Data ████████ COMPLETE (6/6)
 ### Velocity
 - Phases completed: 4/10
 - Plans completed: 24/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6)
-- Requirements delivered: 8/28 (DATA-01, DATA-02, DATA-03, DATA-07-10, COV-01)
+- Requirements delivered: 10/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04)
 - Days since start: 1
 
 ### Quality

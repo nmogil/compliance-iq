@@ -157,12 +157,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- County source research, types, and citation generators
-- [ ] 04-02-PLAN.md -- Adapter infrastructure and MunicipalCodeOnline adapter
-- [ ] 04-03-PLAN.md -- eLaws and American Legal adapters with factory
-- [ ] 04-04-PLAN.md -- County chunking module and fetch orchestrator
-- [ ] 04-05-PLAN.md -- County pipeline orchestration with Pinecone indexing
-- [ ] 04-06-PLAN.md -- HTTP endpoints and Convex jurisdictions table
+- [x] 04-01-PLAN.md -- County source research, types, and citation generators
+- [x] 04-02-PLAN.md -- Adapter infrastructure and MunicipalCodeOnline adapter
+- [x] 04-03-PLAN.md -- eLaws and American Legal adapters with factory
+- [x] 04-04-PLAN.md -- County chunking module and fetch orchestrator
+- [x] 04-05-PLAN.md -- County pipeline orchestration with Pinecone indexing
+- [x] 04-06-PLAN.md -- HTTP endpoints and Convex jurisdictions table
 
 **Requirements Covered:**
 - DATA-06: County regulation scraper extracts from top 10 Texas counties
@@ -357,7 +357,7 @@ Plans:
 | 1 - Foundation | Complete | 2026-01-31 | 2026-02-01 | -- |
 | 2 - Federal Data | Complete | 2026-02-01 | 2026-02-01 | 6 |
 | 3 - State Data | Complete | 2026-02-01 | 2026-02-01 | 4 |
-| 4 - County Data | Pending | TBD | TBD | 2 |
+| 4 - County Data | Complete | 2026-02-02 | 2026-02-02 | 2 |
 | 5 - Municipal Data | Pending | TBD | TBD | 3 |
 | 6 - Data Processing | Pending | TBD | TBD | 4 (validation) |
 | 7 - Query Pipeline | Pending | TBD | TBD | 6 |
@@ -380,4 +380,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-02*
