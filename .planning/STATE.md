@@ -20,18 +20,18 @@
 ## Current Position
 
 **Phase:** 4 of 10 (County Data)
-**Plan:** 1 of 6 in phase
+**Plan:** 2 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 04-01-PLAN.md
+**Last activity:** 2026-02-02 - Completed 04-02-PLAN.md
 
 **Progress:**
 ```
-[███████████████░░░░░] 32% (19/60 plans complete)
+[████████████████░░░░] 33% (20/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
-Phase 4: County Data █░░░░░░░ IN PROGRESS (1/6)
+Phase 4: County Data ██░░░░░░ IN PROGRESS (2/6)
 ```
 
 ---
@@ -108,6 +108,11 @@ Phase 4: County Data █░░░░░░░ IN PROGRESS (1/6)
 | eLaws for Dallas County | 2026-02-02 | Dallas uses dallascounty-tx.elaws.us (server-rendered, Cheerio-compatible) | Active |
 | County adapter pattern | 2026-02-02 | CountyAdapter interface for heterogeneous platform scraping | Active |
 | Bluebook county citations | 2026-02-02 | Format: "[County] County, Tex., [Code] sect. [section] ([year])" | Active |
+| CountyAdapterBase utilities | 2026-02-02 | loadPage, validateSource, sleep for all county adapters | Active |
+| MunicodeAdapter 1000ms rate limit | 2026-02-02 | Conservative delay for Municode SPA platform | Active |
+| Multiple selector strategies | 2026-02-02 | Try multiple CSS selectors for HTML structure robustness | Active |
+| County R2 folder structure | 2026-02-02 | counties/{fipsCode}/chapter-{chapter}/{section}.html hierarchy | Active |
+| Single county checkpoint | 2026-02-02 | All counties share counties/checkpoints/county.json | Active |
 
 ### Recent Changes
 
@@ -144,23 +149,22 @@ Phase 4: County Data █░░░░░░░ IN PROGRESS (1/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-01-PLAN.md: County Source Research and Types
-- Researched all 10 target Texas counties for online ordinance availability
-- Created county type system: CountyOrdinance, CourtOrder, CountySourceConfig, CountyChunk, CountyCheckpoint, CountyAdapter
-- Documented platform findings: 9 counties on Municode, 1 (Dallas) on eLaws
-- Added county citation generators following Bluebook Rule 12.9.2
-- Created source registry with documented platform and base URLs for all 10 counties
-- 2 commits: types + sources, citation generators
-- **Phase 4 started** - County data pipeline foundation complete
+- Completed 04-02-PLAN.md: County Adapter Infrastructure
+- Created abstract CountyAdapterBase class with loadPage, validateSource, sleep utilities
+- Implemented MunicodeAdapter for library.municode.com (9 Texas counties)
+- Created R2 storage module with 7 functions for county ordinances and checkpoints
+- Exported new modules from counties/index.ts
+- 4 commits: base adapter, municode adapter, storage module, index exports
 
 ### What's Next
-1. Phase 4 Plan 2: County scraper adapters
-   - Implement Municode adapter (SPA handling/API discovery)
-   - Implement eLaws adapter (Cheerio-based, server-rendered)
-   - Platform validation utilities
-2. Before production:
+1. Phase 4 Plan 3: eLaws adapter for Dallas County
+   - Implement ELawsAdapter for server-rendered HTML
+   - Test with dallascounty-tx.elaws.us
+2. Phase 4 Plan 4: County chunking module
+   - Chunk county ordinances for embedding
+3. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
-   - Investigate Municode API endpoints for SPA scraping
+   - Investigate Municode API endpoints for full SPA scraping
    - Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
@@ -262,6 +266,20 @@ Phase 4: County Data █░░░░░░░ IN PROGRESS (1/6)
   - Platform findings: 9 Municode, 1 eLaws (Dallas)
   - 6 county citation functions (generateCountyCitation, generateCourtOrderCitation, etc.)
   - Source registry helper functions: getEnabledCounties, getSkippedCounties, getCountyByName, getCountyByFips
+
+**Plan 04-02 complete:**
+- **Adapter Infrastructure (04-02):** Base adapter and MunicodeAdapter
+  - CountyAdapterBase abstract class with loadPage, validateSource, sleep utilities
+  - MunicodeAdapter for library.municode.com (9 Texas counties)
+  - Multiple selector strategies for HTML structure robustness
+  - 1000ms rate limit for Municode SPA platform
+  - loadCheerioPage helper for standalone page loading
+- **Storage Module (04-02):** R2 storage for county ordinances
+  - storeCountyOrdinance, getCountyOrdinance, listCountyOrdinances
+  - saveCountyCheckpoint, loadCountyCheckpoint, clearCountyCheckpoint
+  - getCountyStorageStats for monitoring
+  - R2 folder structure: counties/{fipsCode}/chapter-{chapter}/{section}.html
+  - Checkpoint at: counties/checkpoints/county.json
 
 ---
 
