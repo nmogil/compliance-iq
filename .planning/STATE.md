@@ -20,19 +20,19 @@
 ## Current Position
 
 **Phase:** 5 of 10 (Municipal Data)
-**Plan:** 3 of 6 in phase (05-01 also complete)
+**Plan:** 4 of 6 in phase (05-01, 05-03 also complete)
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 05-03-PLAN.md (storage module)
+**Last activity:** 2026-02-02 - Completed 05-04-PLAN.md (chunking module)
 
 **Progress:**
 ```
-[████████████████████████] 42% (25/60 plans complete)
+[█████████████████████████] 43% (26/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
-Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
+Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
 ```
 
 ---
@@ -41,7 +41,7 @@ Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
 
 ### Velocity
 - Phases completed: 4/10
-- Plans completed: 24/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6)
+- Plans completed: 26/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 3/6)
 - Requirements delivered: 10/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04)
 - Days since start: 1
 
@@ -171,17 +171,17 @@ Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 05-03-PLAN.md: Municipal Storage Module
-- Verified storage.ts with 10 R2 storage functions (created as part of 05-01)
-- Created 05-03-SUMMARY.md documenting storage module
-- Storage functions: storeMunicipalOrdinance, getMunicipalOrdinance, listMunicipalOrdinances, storeMunicipalOrdinances, storeMunicipalMarkdown, getMunicipalMarkdown, saveMunicipalCheckpoint, loadMunicipalCheckpoint, clearMunicipalCheckpoint, getMunicipalStorageStats
-- R2 folder structure: municipal/{cityId}/chapter-{chapter}/{section}.json
-- Markdown cache at municipal/{cityId}/raw/page.md with maxAgeMs expiration
+- Completed 05-04-PLAN.md: Municipal Chunking Module
+- Created chunk.ts with subsection-aware splitting (381 lines)
+- Exported chunkMunicipalOrdinance, chunkCity, getMunicipalChunkStats, ChunkStats from municipal/index.ts
+- MAX_TOKENS=1500, OVERLAP_PERCENT=0.15 matching federal/state/county patterns
+- Three chunking cases: single chunk, subsection split, paragraph split
+- Bluebook citations via generateMunicipalCitation
+- Hierarchy breadcrumbs via generateMunicipalHierarchy
 
 ### What's Next
 1. Continue Phase 5 Municipal Data:
    - 05-02: Scraper/parser with Firecrawl
-   - 05-04: Chunking module
    - 05-05: Pipeline orchestration
    - 05-06: HTTP endpoints and coverage
 2. Before production:
@@ -368,6 +368,17 @@ Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
   - R2 folder structure: municipal/{cityId}/chapter-{chapter}/{section}.json
   - Markdown cache: municipal/{cityId}/raw/page.md
   - Checkpoint: municipal/checkpoints/municipal.json
+
+**Plan 05-04 complete:**
+- **Chunking Module (05-04):** Municipal ordinance chunking
+  - chunkMunicipalOrdinance with three cases: single chunk, subsection split, paragraph split
+  - chunkCity for batch processing all ordinances with statistics
+  - getMunicipalChunkStats for dry-run validation
+  - MAX_TOKENS=1500, OVERLAP_PERCENT=0.15 matching federal/state/county patterns
+  - Bluebook citations via generateMunicipalCitation
+  - Hierarchy breadcrumbs via generateMunicipalHierarchy
+  - ChunkStats interface for statistics typing
+  - All exports available from municipal/index.ts
 
 ---
 
