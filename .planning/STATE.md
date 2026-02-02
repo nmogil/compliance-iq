@@ -20,18 +20,18 @@
 ## Current Position
 
 **Phase:** 4 of 10 (County Data)
-**Plan:** 3 of 6 in phase
+**Plan:** 4 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 04-03-PLAN.md
+**Last activity:** 2026-02-02 - Completed 04-04-PLAN.md
 
 **Progress:**
 ```
-[████████████████░░░░] 35% (21/60 plans complete)
+[██████████████████░░] 37% (22/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
-Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
+Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
 ```
 
 ---
@@ -40,7 +40,7 @@ Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
 
 ### Velocity
 - Phases completed: 3/10
-- Plans completed: 18/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6)
+- Plans completed: 22/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 4/6)
 - Requirements delivered: 7/28 (DATA-01, DATA-02, DATA-07-10, COV-01)
 - Days since start: 1
 
@@ -116,6 +116,11 @@ Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
 | ElawsAdapter 1000ms rate limit | 2026-02-02 | Conservative delay for eLaws server-rendered content | Active |
 | AmlegalAdapter 5000ms rate limit | 2026-02-02 | Required by robots.txt compliance for American Legal | Active |
 | Adapter factory pattern | 2026-02-02 | getAdapterForCounty returns platform-specific adapter | Active |
+| County chunking 1500 token limit | 2026-02-02 | Matches federal/state patterns, well under 8192 embedding limit | Active |
+| County chunking 15% overlap | 2026-02-02 | Preserves cross-reference context between chunks | Active |
+| Paragraph-based splitting for counties | 2026-02-02 | Used when sections have no subsections to split on | Active |
+| Sequential county processing | 2026-02-02 | Avoids API overload from parallel requests | Active |
+| Per-county checkpointing | 2026-02-02 | Enables resumption from exact county that failed | Active |
 
 ### Recent Changes
 
@@ -152,20 +157,18 @@ Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-03-PLAN.md: eLaws and AmLegal Adapters with Factory
-- Created ElawsAdapter for Dallas County (eLaws platform, server-rendered)
-- Created AmlegalAdapter with 5-second robots.txt compliance
-- Implemented adapter factory (getAdapterForCounty) for platform-agnostic scraping
-- Added utility functions: getAdaptersForEnabledCounties, validateAllCountySources, getAdapterStats
-- Updated counties/index.ts to export all new adapters and factory functions
-- 4 commits: eLaws adapter, AmLegal adapter, factory index, base adapter fix
+- Completed 04-04-PLAN.md: County Chunking and Fetch Orchestrator
+- Created chunking module following texas/chunk.ts patterns (1500 token limit, 15% overlap)
+- Built fetch orchestrator using adapters for all enabled counties
+- Implemented checkpoint-based resumption for fault tolerance
+- Added statistics functions for monitoring chunk quality and fetch progress
+- 3 commits: chunk module, fetch orchestrator, index exports
 
 ### What's Next
-1. Phase 4 Plan 4: County chunking module
-   - Chunk county ordinances for embedding
-   - Follow Texas chunking patterns
-2. Phase 4 Plan 5: County pipeline orchestration
+1. Phase 4 Plan 5: County pipeline orchestration
    - End-to-end fetch, chunk, embed, index
+   - HTTP endpoints for manual triggering
+2. Phase 4 Plan 6: County pipeline testing and verification
 3. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
    - Investigate Municode API endpoints for full SPA scraping
@@ -196,7 +199,7 @@ Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
 
 ---
 
-## Phase 3 Deliverables (In Progress)
+## Phase 3 Deliverables
 
 ### Texas State Data Pipeline
 
@@ -293,6 +296,17 @@ Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
   - Utility functions: getAdaptersForEnabledCounties, validateAllCountySources
   - getAdapterStats provides platform distribution statistics
   - All adapters use multiple selector strategies for robustness
+
+**Plan 04-04 complete:**
+- **Chunking and Fetch (04-04):** County chunking and fetch orchestrator
+  - chunkCountyOrdinance with 1500 token limit and 15% overlap
+  - chunkCounty for batch processing all ordinances from a county
+  - splitWithOverlap for paragraph-based splitting of long sections
+  - getCountyChunkStats for monitoring chunk quality
+  - fetchCountyOrdinances for single county fetching with R2 storage
+  - fetchAllEnabledCounties for batch processing all counties
+  - Checkpoint-based resumption for fault tolerance
+  - Sequential county processing to avoid API overload
 
 ---
 
