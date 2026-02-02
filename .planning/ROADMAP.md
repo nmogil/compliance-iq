@@ -226,6 +226,17 @@ Plans:
 
 **Dependencies:** Phase 5
 
+**Plans:** 7 plans
+
+Plans:
+- [ ] 06-01-PLAN.md -- Validation type system and shared interfaces
+- [ ] 06-02-PLAN.md -- Token distribution analyzer for chunk quality
+- [ ] 06-03-PLAN.md -- Metadata validator for completeness checking
+- [ ] 06-04-PLAN.md -- Coverage checker against target jurisdiction lists
+- [ ] 06-05-PLAN.md -- Quality reporter for comprehensive reports
+- [ ] 06-06-PLAN.md -- HTTP endpoints and CLI validation script
+- [ ] 06-07-PLAN.md -- Data processing documentation
+
 **Requirements Covered:**
 - Validates DATA-07: Chunking pipeline splits regulatory text into embeddable segments with metadata
 - Validates DATA-08: Embedding pipeline generates vectors via OpenAI text-embedding-3-large
