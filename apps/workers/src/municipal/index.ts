@@ -14,5 +14,8 @@ export * from './cities';
 // Storage operations (R2, checkpoints, markdown cache)
 export * from './storage';
 
-// Chunking operations
-export * from './chunk';
+// Firecrawl scraper
+export * from './scraper';
+
+// Markdown parser
+export * from './parser';
