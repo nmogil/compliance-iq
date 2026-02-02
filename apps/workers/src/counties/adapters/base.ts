@@ -1,52 +1,45 @@
 /**
- * County Adapter Base Class
+ * Base County Adapter
  *
- * Abstract base class implementing common scraping utilities for all county adapters.
- * Each platform (Municode, eLaws, AmLegal) extends this class to implement
- * platform-specific scraping logic.
- *
- * Provides:
+ * Abstract base class for county ordinance adapters providing common utilities:
  * - Rate-limited HTTP fetching
  * - Cheerio HTML parsing
  * - Source validation
  * - Error handling
+ *
+ * Each county platform (Municode, eLaws, AmLegal) extends this base
+ * with platform-specific scraping logic.
  */
 
 import * as cheerio from 'cheerio';
-import { fetchWithRateLimit } from '../../lib/scraper';
+import { fetchWithRateLimit, retryWithBackoff } from '../../lib/scraper';
 import type { CountyAdapter, CountyOrdinance, CountyPlatform } from '../types';
 
 /**
  * Abstract base class for county ordinance adapters
  *
- * Provides common utilities for:
- * - Rate-limited HTTP fetching
- * - Cheerio HTML parsing
- * - Source validation
- * - Error handling
+ * Provides common utilities shared by all platform-specific adapters.
+ * Subclasses must implement:
+ * - fetchOrdinances(): AsyncGenerator yielding ordinances
+ * - validateStructure($): Platform-specific HTML validation
  */
 export abstract class CountyAdapterBase implements CountyAdapter {
-  /** County name */
   abstract county: string;
-
-  /** FIPS code for county */
   abstract fipsCode: string;
-
-  /** Base URL for ordinance source */
   abstract baseUrl: string;
-
-  /** Platform type (affects scraping strategy) */
   abstract platform: CountyPlatform;
 
-  /** Rate limit delay between requests (ms) */
+  /** Rate limit delay between requests (ms) - override in subclasses as needed */
   protected rateLimit = 500;
 
   /** User-Agent header for requests */
-  protected userAgent = 'ComplianceIQ/1.0 (+https://compliance-iq.com)';
+  protected userAgent = 'ComplianceIQ/1.0 Legal Research (+https://compliance-iq.com)';
 
   /**
    * Fetch all ordinances for this county
-   * Must be implemented by platform-specific adapters
+   *
+   * Yields ordinances one at a time for memory efficiency
+   * when processing large county codes.
    */
   abstract fetchOrdinances(): AsyncGenerator<CountyOrdinance, void, unknown>;
 
@@ -55,10 +48,8 @@ export abstract class CountyAdapterBase implements CountyAdapter {
    *
    * Checks:
    * 1. URL returns 200
-   * 2. Expected HTML structure exists
+   * 2. Expected HTML structure exists (via validateStructure)
    * 3. No Cloudflare challenge blocking access
-   *
-   * @returns Validation result with accessibility status
    */
   async validateSource(): Promise<{ accessible: boolean; error?: string }> {
     try {
@@ -92,17 +83,20 @@ export abstract class CountyAdapterBase implements CountyAdapter {
 
   /**
    * Validate expected HTML structure exists
-   * Override in subclasses for platform-specific validation
    *
-   * @param $ Cheerio API instance loaded with page HTML
-   * @returns True if expected structure exists
+   * Override in subclasses for platform-specific validation.
+   * Should return true if the page contains expected elements
+   * that indicate the structure hasn't changed.
+   *
+   * @param $ Cheerio API loaded with page HTML
+   * @returns true if structure is valid
    */
   protected abstract validateStructure($: cheerio.CheerioAPI): boolean;
 
   /**
    * Load and parse HTML page with Cheerio
    *
-   * Includes rate limiting and retry logic for robustness.
+   * Includes rate limiting and retry logic for resilient fetching.
    *
    * @param url URL to fetch
    * @returns Cheerio API instance for parsing
@@ -112,17 +106,16 @@ export abstract class CountyAdapterBase implements CountyAdapter {
       rateLimitDelayMs: this.rateLimit,
       headers: { 'User-Agent': this.userAgent },
     });
-
     const html = await response.text();
     return cheerio.load(html);
   }
 
   /**
-   * Sleep for rate limiting
+   * Sleep utility for rate limiting
    *
-   * @param ms Milliseconds to sleep
+   * @param ms Milliseconds to delay
    */
-  protected async sleep(ms: number): Promise<void> {
+  protected sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
@@ -130,30 +123,27 @@ export abstract class CountyAdapterBase implements CountyAdapter {
 /**
  * Helper: Load Cheerio page with retry logic
  *
- * Exported for use in individual adapters that need standalone page loading
- * outside of the adapter class context.
+ * Standalone function for use outside adapter classes.
  *
  * @param url URL to fetch
- * @param rateLimit Rate limit delay in ms (default: 500)
- * @param userAgent User-Agent header (default: ComplianceIQ/1.0)
+ * @param rateLimitMs Rate limit delay in milliseconds (default: 500)
+ * @param userAgent User-Agent header (default: ComplianceIQ)
  * @returns Cheerio API instance for parsing
- *
- * @example
- * ```ts
- * const $ = await loadCheerioPage('https://example.com/ordinances');
- * const title = $('h1').text();
- * ```
  */
 export async function loadCheerioPage(
   url: string,
-  rateLimit = 500,
-  userAgent = 'ComplianceIQ/1.0'
+  rateLimitMs = 500,
+  userAgent = 'ComplianceIQ/1.0 Legal Research (+https://compliance-iq.com)'
 ): Promise<cheerio.CheerioAPI> {
-  const response = await fetchWithRateLimit(url, `loadCheerioPage(${url})`, {
-    rateLimitDelayMs: rateLimit,
-    headers: { 'User-Agent': userAgent },
-  });
-
-  const html = await response.text();
+  const html = await retryWithBackoff(
+    async () => {
+      const response = await fetchWithRateLimit(url, `loadCheerioPage(${url})`, {
+        rateLimitDelayMs: rateLimitMs,
+        headers: { 'User-Agent': userAgent },
+      });
+      return response.text();
+    },
+    `loadCheerioPage(${url})`
+  );
   return cheerio.load(html);
 }
