@@ -346,4 +346,29 @@ Phase 5: Municipal Data ██░░░░░░ In Progress (2/6)
 
 ---
 
+## Phase 5 Deliverables (In Progress)
+
+### Municipal Data Pipeline
+
+**Plan 05-01 complete:**
+- **Type System and City Registry (05-01):** Municipal foundation
+  - 5 TypeScript interfaces (MunicipalOrdinance, MunicipalChunk, MunicipalCityConfig, MunicipalCheckpoint, MunicipalBatchResult)
+  - 20 Texas cities registered with platform mapping (17 Municode, 3 American Legal)
+  - Firecrawl config: 2000ms waitFor for Municode, 1000ms for American Legal
+  - 5 municipal citation functions (generateMunicipalCitation, generateMunicipalChunkId, generateMunicipalSourceId, generateMunicipalUrl, generateMunicipalHierarchy)
+  - Helper functions: getEnabledCities, getSkippedCities, getCityById, getCityByName, getMunicodeCities, getAmlegalCities, getCoverageStats
+
+**Plan 05-03 complete:**
+- **Storage Module (05-03):** R2 storage for municipal ordinances and markdown cache
+  - 10 storage functions following counties/storage.ts patterns
+  - storeMunicipalOrdinance, getMunicipalOrdinance, listMunicipalOrdinances, storeMunicipalOrdinances
+  - storeMunicipalMarkdown, getMunicipalMarkdown (with maxAgeMs expiration for Firecrawl cost optimization)
+  - saveMunicipalCheckpoint, loadMunicipalCheckpoint, clearMunicipalCheckpoint
+  - getMunicipalStorageStats for monitoring
+  - R2 folder structure: municipal/{cityId}/chapter-{chapter}/{section}.json
+  - Markdown cache: municipal/{cityId}/raw/page.md
+  - Checkpoint: municipal/checkpoints/municipal.json
+
+---
+
 *State file updated: 2026-02-02*
