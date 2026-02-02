@@ -189,6 +189,16 @@ Plans:
 
 **Dependencies:** Phase 4
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- Types, city registry (20 cities), and municipal citation generators
+- [ ] 05-02-PLAN.md -- Firecrawl scraper and markdown parser
+- [ ] 05-03-PLAN.md -- R2 storage with markdown caching and checkpoints
+- [ ] 05-04-PLAN.md -- Municipal chunking with subsection-aware splitting
+- [ ] 05-05-PLAN.md -- Pipeline orchestration with Pinecone indexing
+- [ ] 05-06-PLAN.md -- HTTP endpoints and Convex coverage tracking
+
 **Requirements Covered:**
 - DATA-04: Municode scraper extracts ordinances from 15+ Texas cities
 - DATA-05: American Legal scraper extracts ordinances from Dallas, Fort Worth, Austin
@@ -202,8 +212,8 @@ Plans:
 5. Test queries filtered by city return relevant municipal codes
 
 **Deliverables:**
-- Municode scraper (Cloudflare Worker + Browserless.io for JS rendering)
-- American Legal scraper
+- Municode scraper (using Firecrawl.dev for JS rendering)
+- American Legal scraper (using Firecrawl.dev)
 - Municipal data processing pipeline
 - Convex jurisdictions table lists all 20 cities
 - Coverage report: all 20 cities indexed
