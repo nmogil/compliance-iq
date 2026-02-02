@@ -19,20 +19,20 @@
 
 ## Current Position
 
-**Phase:** 5 of 10 (Municipal Data)
-**Plan:** 5 of 6 in phase (05-01, 05-02, 05-03, 05-04, 05-05 complete)
-**Status:** In progress
-**Last activity:** 2026-02-02 - Completed 05-05-PLAN.md (pipeline orchestration)
+**Phase:** 5 of 10 (Municipal Data) - COMPLETE
+**Plan:** 6 of 6 in phase (ALL COMPLETE)
+**Status:** Phase complete
+**Last activity:** 2026-02-02 - Completed 05-06-PLAN.md (HTTP endpoints and coverage)
 
 **Progress:**
 ```
-[████████████████████████████] 47% (28/60 plans complete)
+[████████████████████████████] 48% (29/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
-Phase 5: Municipal Data █████░░░ In Progress (5/6)
+Phase 5: Municipal Data ████████ COMPLETE (6/6)
 ```
 
 ---
@@ -40,9 +40,9 @@ Phase 5: Municipal Data █████░░░ In Progress (5/6)
 ## Performance Metrics
 
 ### Velocity
-- Phases completed: 4/10
-- Plans completed: 28/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 5/6)
-- Requirements delivered: 10/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04)
+- Phases completed: 5/10
+- Plans completed: 29/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6)
+- Requirements delivered: 11/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04, DATA-11)
 - Days since start: 1
 
 ### Quality
@@ -418,6 +418,38 @@ Phase 5: Municipal Data █████░░░ In Progress (5/6)
   - sourceType: 'municipal' for Pinecone filtering
   - MunicipalPipelineResult and MunicipalBatchPipelineResult types
   - All exports available from municipal/index.ts
+
+**Plan 05-06 complete:**
+- **HTTP Endpoints and Coverage (05-06):** Pipeline triggering and tracking
+  - POST /pipeline/municipal - Process all 20 enabled Texas cities
+  - POST /pipeline/municipal/:city - Process single city by ID/name
+  - GET /pipeline/municipal/status - Get pipeline status and storage stats
+  - POST /pipeline/municipal/reset - Clear checkpoint for fresh run
+  - Convex schema with cityId field and by_city_id index
+  - listTexasCities, updateCityStatus, getCityByCityId, getTexasCityCoverage functions
+  - Coverage report generator with JSON and markdown output
+  - Test script for Pinecone jurisdiction filtering validation
+
+---
+
+## Session Continuity
+
+### What Just Happened
+- Completed 05-06-PLAN.md: HTTP Endpoints and Coverage
+- Added 4 HTTP endpoints for municipal pipeline triggering
+- Added 4 Convex functions for city tracking
+- Created coverage report generator (JSON + Markdown)
+- Created test script for Pinecone query validation
+- Phase 5 (Municipal Data) is now COMPLETE
+
+### What's Next
+1. Phase 6 (Embeddings) or next planned phase
+2. Before production:
+   - Configure FIRECRAWL_API_KEY in Cloudflare Workers secrets
+   - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
+   - Ensure R2_BUCKET binding matches DOCUMENTS_BUCKET in wrangler.jsonc
+   - Run municipal pipeline: POST /pipeline/municipal
+   - Validate with: pnpm exec tsx scripts/test-municipal-query.ts
 
 ---
 
