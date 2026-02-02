@@ -42,7 +42,7 @@ Phase 5: Municipal Data ████████ COMPLETE (6/6)
 ### Velocity
 - Phases completed: 5/10
 - Plans completed: 29/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6)
-- Requirements delivered: 11/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04, DATA-11)
+- Requirements delivered: 13/28 (DATA-01 through DATA-10, COV-01 through COV-05)
 - Days since start: 1
 
 ### Quality
@@ -179,24 +179,25 @@ Phase 5: Municipal Data ████████ COMPLETE (6/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 05-05-PLAN.md: Municipal Pipeline Orchestration
-- Created fetch.ts with fetchCity, fetchAllEnabledCities, fetchSingleCity
-- Created pipeline.ts with processCity, processAllCities, processSingleCity
-- Updated index.ts to export all 8 municipal modules
-- End-to-end pipeline: fetch -> store -> chunk -> embed -> index
+- Completed Phase 5: Municipal Data (all 6 plans executed)
+- Created 10-file municipal module (3,222 lines total)
+- 20 Texas cities registered (17 Municode, 3 American Legal)
+- Firecrawl-based scraping with markdown caching
+- End-to-end pipeline: scrape -> store -> chunk -> embed -> index
 - Pinecone vectors with TX-{cityId} jurisdiction (e.g., TX-houston)
 - sourceType: 'municipal' for Pinecone filtering
-- Skip-and-log pattern continues processing after city failures
-- Checkpoint-based resumption for fault tolerance
-- 30-day markdown cache TTL to minimize Firecrawl costs
+- HTTP endpoints: /pipeline/municipal, /pipeline/municipal/:city, /pipeline/municipal/status
+- Convex city tracking: listTexasCities, updateCityStatus, getCityByCityId, getTexasCityCoverage
+- Coverage report generator with JSON and markdown formats
+- Phase verified: 5/5 must-haves passed
 
 ### What's Next
-1. Complete Phase 5 Municipal Data:
-   - 05-06: HTTP endpoints and coverage
+1. Phase 6: Data Processing - Validate end-to-end pipelines across all data sources
 2. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
    - Configure Firecrawl API key in Workers secrets
    - Configure Pinecone API key and Convex URL in Workers secrets
+   - Run live API integration tests (Firecrawl, OpenAI, Pinecone)
 
 ---
 

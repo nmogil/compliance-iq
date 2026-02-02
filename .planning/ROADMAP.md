@@ -192,12 +192,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Types, city registry (20 cities), and municipal citation generators
-- [ ] 05-02-PLAN.md -- Firecrawl scraper and markdown parser
-- [ ] 05-03-PLAN.md -- R2 storage with markdown caching and checkpoints
-- [ ] 05-04-PLAN.md -- Municipal chunking with subsection-aware splitting
-- [ ] 05-05-PLAN.md -- Pipeline orchestration with Pinecone indexing
-- [ ] 05-06-PLAN.md -- HTTP endpoints and Convex coverage tracking
+- [x] 05-01-PLAN.md -- Types, city registry (20 cities), and municipal citation generators
+- [x] 05-02-PLAN.md -- Firecrawl scraper and markdown parser
+- [x] 05-03-PLAN.md -- R2 storage with markdown caching and checkpoints
+- [x] 05-04-PLAN.md -- Municipal chunking with subsection-aware splitting
+- [x] 05-05-PLAN.md -- Pipeline orchestration with Pinecone indexing
+- [x] 05-06-PLAN.md -- HTTP endpoints and Convex coverage tracking
 
 **Requirements Covered:**
 - DATA-04: Municode scraper extracts ordinances from 15+ Texas cities
@@ -368,7 +368,7 @@ Plans:
 | 2 - Federal Data | Complete | 2026-02-01 | 2026-02-01 | 6 |
 | 3 - State Data | Complete | 2026-02-01 | 2026-02-01 | 4 |
 | 4 - County Data | Complete | 2026-02-02 | 2026-02-02 | 2 |
-| 5 - Municipal Data | Pending | TBD | TBD | 3 |
+| 5 - Municipal Data | Complete | 2026-02-02 | 2026-02-02 | 3 |
 | 6 - Data Processing | Pending | TBD | TBD | 4 (validation) |
 | 7 - Query Pipeline | Pending | TBD | TBD | 6 |
 | 8 - Application | Pending | TBD | TBD | 5 |
@@ -390,4 +390,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-02-02*
+*Last updated: 2026-02-02 - Phase 5 complete*
