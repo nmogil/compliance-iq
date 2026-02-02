@@ -642,3 +642,171 @@ export function generateCountyHierarchy(
     `Section ${section}`,
   ];
 }
+
+// ============================================================================
+// Municipal Citation Utilities
+// ============================================================================
+
+import type { MunicipalCityConfig } from '../municipal/types';
+
+/**
+ * Generate Bluebook-format municipal ordinance citation
+ *
+ * Based on Bluebook Rule 12.9.2: Municipal ordinances cited analogously to statutes.
+ * Format: [City], Tex., Code of Ordinances sect. [section] ([year])
+ *
+ * @param city City name (e.g., "Houston", "Dallas")
+ * @param section Section number (e.g., "1-2", "10.4.5")
+ * @param year Publication year (defaults to current year)
+ * @returns Bluebook citation string
+ *
+ * @example
+ * ```ts
+ * generateMunicipalCitation('Houston', '1-2', 2026)
+ * // => "Houston, Tex., Code of Ordinances sect. 1-2 (2026)"
+ *
+ * generateMunicipalCitation('Dallas', '10.4.5')
+ * // => "Dallas, Tex., Code of Ordinances sect. 10.4.5 (2026)"
+ * ```
+ */
+export function generateMunicipalCitation(
+  city: string,
+  section: string,
+  year?: number
+): string {
+  const citationYear = year ?? new Date().getFullYear();
+  return `${city}, Tex., Code of Ordinances sect. ${section} (${citationYear})`;
+}
+
+/**
+ * Generate a unique chunk ID for a municipal ordinance chunk
+ *
+ * Format: municipal-{cityId}-{chapter}-{section}-{chunkIndex}
+ *
+ * @param cityId City identifier (URL-safe, e.g., "houston", "san_antonio")
+ * @param chapter Chapter number
+ * @param section Section number
+ * @param chunkIndex Index of chunk within section (0-based)
+ * @returns Unique chunk identifier
+ *
+ * @example
+ * ```ts
+ * generateMunicipalChunkId('houston', '1', '1-2', 0)
+ * // => "municipal-houston-1-1-2-0"
+ *
+ * generateMunicipalChunkId('san_antonio', '10', '10.4.5', 1)
+ * // => "municipal-san_antonio-10-10.4.5-1"
+ * ```
+ */
+export function generateMunicipalChunkId(
+  cityId: string,
+  chapter: string,
+  section: string,
+  chunkIndex: number
+): string {
+  return `municipal-${cityId}-${chapter}-${section}-${chunkIndex}`;
+}
+
+/**
+ * Generate source ID for a municipal city
+ *
+ * Format: municipal-{cityId}
+ *
+ * @param cityId City identifier (URL-safe, e.g., "houston")
+ * @returns Source identifier
+ *
+ * @example
+ * ```ts
+ * generateMunicipalSourceId('houston')
+ * // => "municipal-houston"
+ *
+ * generateMunicipalSourceId('san_antonio')
+ * // => "municipal-san_antonio"
+ * ```
+ */
+export function generateMunicipalSourceId(cityId: string): string {
+  return `municipal-${cityId}`;
+}
+
+/**
+ * Generate URL for municipal ordinance based on platform
+ *
+ * Handles platform-specific URL patterns for Municode and American Legal.
+ *
+ * @param config Municipal city configuration
+ * @param section Optional section number for deep linking
+ * @returns URL to municipal ordinance (base URL or section-specific)
+ *
+ * @example
+ * ```ts
+ * const houstonConfig = { platform: 'municode', baseUrl: 'https://library.municode.com/tx/houston/codes/code_of_ordinances' };
+ *
+ * generateMunicipalUrl(houstonConfig)
+ * // => "https://library.municode.com/tx/houston/codes/code_of_ordinances"
+ *
+ * generateMunicipalUrl(houstonConfig, '1-2')
+ * // => "https://library.municode.com/tx/houston/codes/code_of_ordinances?nodeId=1-2"
+ *
+ * const dallasConfig = { platform: 'amlegal', baseUrl: 'https://codelibrary.amlegal.com/codes/dallas/latest/dallas_tx/0-0-0-1' };
+ *
+ * generateMunicipalUrl(dallasConfig, '10.4.5')
+ * // => "https://codelibrary.amlegal.com/codes/dallas/latest/dallas_tx/0-0-0-1#10.4.5"
+ * ```
+ */
+export function generateMunicipalUrl(
+  config: Pick<MunicipalCityConfig, 'platform' | 'baseUrl'>,
+  section?: string
+): string {
+  // Return base URL if no section specified
+  if (!section) {
+    return config.baseUrl;
+  }
+
+  // Platform-specific URL construction
+  switch (config.platform) {
+    case 'municode':
+      // Municode uses nodeId parameter for sections
+      return `${config.baseUrl}?nodeId=${encodeURIComponent(section)}`;
+
+    case 'amlegal':
+      // American Legal uses hash fragment for sections
+      return `${config.baseUrl}#${encodeURIComponent(section)}`;
+
+    default:
+      // Fallback to hash
+      return `${config.baseUrl}#${encodeURIComponent(section)}`;
+  }
+}
+
+/**
+ * Generate hierarchy breadcrumbs for municipal ordinances
+ *
+ * Creates a breadcrumb array showing the full regulatory path,
+ * useful for providing context in vector search results.
+ *
+ * @param cityName City display name (e.g., "Houston", "San Antonio")
+ * @param chapter Chapter number or identifier
+ * @param section Section number
+ * @returns Array of hierarchy strings
+ *
+ * @example
+ * ```ts
+ * generateMunicipalHierarchy('Houston', '1', '1-2')
+ * // => ["Texas Municipalities", "Houston", "Chapter 1", "Section 1-2"]
+ *
+ * generateMunicipalHierarchy('San Antonio', '10', '10.4.5')
+ * // => ["Texas Municipalities", "San Antonio", "Chapter 10", "Section 10.4.5"]
+ * ```
+ */
+export function generateMunicipalHierarchy(
+  cityName: string,
+  chapter: string,
+  section: string
+): string[] {
+  return [
+    'Texas Municipalities',
+    cityName,
+    `Chapter ${chapter}`,
+    `Section ${section}`,
+  ];
+}
