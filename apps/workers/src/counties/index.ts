@@ -70,3 +70,10 @@ export {
   getFetchStats,
 } from './fetch';
 export type { CountyFetchResult, AllCountiesFetchResult } from './fetch';
+
+// Pipeline orchestrator
+export {
+  processCounty,
+  processAllCounties,
+} from './pipeline';
+export type { CountyPipelineResult, CountyBatchPipelineResult } from './pipeline';
