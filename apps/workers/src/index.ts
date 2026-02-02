@@ -8,6 +8,14 @@ import {
   processTexasTACTitle,
 } from './texas/pipeline';
 import { TARGET_STATUTES, TARGET_TAC_TITLES } from './texas/types';
+import {
+  processAllCounties,
+  processCounty,
+  getEnabledCounties,
+  getSkippedCounties,
+  getCountyByName,
+  validateCountySources,
+} from './counties';
 
 /**
  * Cloudflare Worker for ComplianceIQ data pipeline
@@ -38,6 +46,10 @@ export default {
             'POST /pipeline/texas/tac - Trigger Texas TAC pipeline (5 titles)',
             'POST /pipeline/texas/statutes/:code - Trigger single statute code pipeline',
             'POST /pipeline/texas/tac/:title - Trigger single TAC title pipeline',
+            'POST /pipeline/counties - Trigger county pipeline (10 Texas counties)',
+            'POST /pipeline/counties/:county - Trigger single county pipeline',
+            'GET /pipeline/counties/status - Get county coverage status',
+            'POST /pipeline/counties/validate - Validate county sources',
           ],
         }),
         {
@@ -250,6 +262,130 @@ export default {
         });
       } catch (error) {
         console.error(`[Worker] Pipeline failed for TAC Title ${titleNumber}:`, error);
+        return new Response(
+          JSON.stringify({
+            error: 'Pipeline failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /pipeline/counties - Trigger full county pipeline (10 Texas counties)
+    if (url.pathname === '/pipeline/counties' && request.method === 'POST') {
+      try {
+        console.log('[Worker] Starting full county pipeline');
+        const result = await processAllCounties(env);
+        return new Response(JSON.stringify(result), {
+          status: result.success ? 200 : 207, // 207 Multi-Status if partial success
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] County pipeline failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Pipeline failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // GET /pipeline/counties/status - Get county coverage status
+    if (url.pathname === '/pipeline/counties/status' && request.method === 'GET') {
+      const enabled = getEnabledCounties();
+      const skipped = getSkippedCounties();
+
+      const status = {
+        totalCounties: 10,
+        enabledCount: enabled.length,
+        skippedCount: skipped.length,
+        enabled: enabled.map((c) => ({
+          name: c.name,
+          fipsCode: c.fipsCode,
+          platform: c.platform,
+          categories: c.categories,
+        })),
+        skipped: skipped.map((c) => ({
+          name: c.name,
+          fipsCode: c.fipsCode,
+          reason: c.skipReason,
+        })),
+      };
+
+      return new Response(JSON.stringify(status, null, 2), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // POST /pipeline/counties/validate - Validate all county sources
+    if (url.pathname === '/pipeline/counties/validate' && request.method === 'POST') {
+      try {
+        console.log('[Worker] Validating county sources');
+        const result = await validateCountySources();
+
+        return new Response(
+          JSON.stringify(
+            {
+              validCount: result.valid.length,
+              invalidCount: result.invalid.length,
+              valid: result.valid,
+              invalid: result.invalid,
+            },
+            null,
+            2
+          ),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      } catch (error) {
+        console.error('[Worker] County validation failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Validation failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /pipeline/counties/:county - Trigger single county pipeline
+    const countyMatch = url.pathname.match(/^\/pipeline\/counties\/([a-z-]+)$/i);
+    if (countyMatch && countyMatch[1] && request.method === 'POST') {
+      const countyName = countyMatch[1].replace(/-/g, ' '); // Handle "fort-bend" -> "Fort Bend"
+      const countyConfig = getCountyByName(countyName);
+
+      if (!countyConfig) {
+        return new Response(
+          JSON.stringify({ error: `Unknown county: ${countyName}` }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log(`[Worker] Starting pipeline for ${countyConfig.name} County`);
+        const result = await processCounty(countyConfig, env);
+        return new Response(JSON.stringify(result), {
+          status: result.success ? 200 : 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error(`[Worker] Pipeline failed for ${countyConfig.name} County:`, error);
         return new Response(
           JSON.stringify({
             error: 'Pipeline failed',
