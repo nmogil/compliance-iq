@@ -77,3 +77,10 @@ export {
   processAllCounties,
 } from './pipeline';
 export type { CountyPipelineResult, CountyBatchPipelineResult } from './pipeline';
+
+// Coverage reporting
+export {
+  generateCoverageReport,
+  formatCoverageReportMarkdown,
+} from './coverage';
+export type { CountyCoverageReport } from './coverage';
