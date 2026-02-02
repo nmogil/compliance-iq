@@ -1,6 +1,6 @@
 # Project State: ComplianceIQ
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-02
 
 ---
 
@@ -19,18 +19,19 @@
 
 ## Current Position
 
-**Phase:** 3 of 10 (State Data)
-**Plan:** 6 of 6 in phase
-**Status:** Phase complete
-**Last activity:** 2026-02-01 - Completed 03-06-PLAN.md
+**Phase:** 4 of 10 (County Data)
+**Plan:** 1 of 6 in phase
+**Status:** In progress
+**Last activity:** 2026-02-02 - Completed 04-01-PLAN.md
 
 **Progress:**
 ```
-[██████████████░░░░░░] 30% (18/60 plans complete)
+[███████████████░░░░░] 32% (19/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
+Phase 4: County Data █░░░░░░░ IN PROGRESS (1/6)
 ```
 
 ---
@@ -102,6 +103,11 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 | Sequential Texas code processing | 2026-02-01 | Process 27 codes and 5 titles sequentially to avoid API overload | Active |
 | Reuse federal embedChunks for Texas | 2026-02-01 | TexasChunk and CFRChunk share same embedding interface | Active |
 | State sourceType for Texas in Pinecone | 2026-02-01 | Use "state" to match ChunkMetadata type (not "tx-statute" or "tx-tac") | Active |
+| 10 target Texas counties | 2026-02-02 | Top 10 by Costco presence: Harris, Dallas, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso | Active |
+| Municode for 9 counties | 2026-02-02 | Harris, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso use library.municode.com | Active |
+| eLaws for Dallas County | 2026-02-02 | Dallas uses dallascounty-tx.elaws.us (server-rendered, Cheerio-compatible) | Active |
+| County adapter pattern | 2026-02-02 | CountyAdapter interface for heterogeneous platform scraping | Active |
+| Bluebook county citations | 2026-02-02 | Format: "[County] County, Tex., [Code] sect. [section] ([year])" | Active |
 
 ### Recent Changes
 
@@ -138,24 +144,23 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 03-06-PLAN.md: Texas Pipeline Orchestration
-- Created texas/pipeline.ts with end-to-end pipeline orchestrator
-- Implemented 6 pipeline functions: processTexasCode, processTexasTACTitle, processTexasStatutes, processTexasTAC, processAllTexasSources, syncConvexTexasSources
-- Added 5 HTTP endpoints: POST /pipeline/texas, POST /pipeline/texas/statutes, POST /pipeline/texas/tac, POST /pipeline/texas/statutes/:code, POST /pipeline/texas/tac/:title
-- Checkpoint-based resumption for both statutes and TAC
-- Pinecone indexing with TX jurisdiction and state sourceType
-- Best-effort Convex sync (non-blocking)
-- 3 commits: pipeline orchestrator + HTTP endpoints + module exports
-- **Phase 3 COMPLETE** - Texas data pipeline operational
+- Completed 04-01-PLAN.md: County Source Research and Types
+- Researched all 10 target Texas counties for online ordinance availability
+- Created county type system: CountyOrdinance, CourtOrder, CountySourceConfig, CountyChunk, CountyCheckpoint, CountyAdapter
+- Documented platform findings: 9 counties on Municode, 1 (Dallas) on eLaws
+- Added county citation generators following Bluebook Rule 12.9.2
+- Created source registry with documented platform and base URLs for all 10 counties
+- 2 commits: types + sources, citation generators
+- **Phase 4 started** - County data pipeline foundation complete
 
 ### What's Next
-1. Phase 4: Query Implementation
-   - RAG query processor with Pinecone + Convex
-   - Citation extraction and ranking
-   - Multi-jurisdiction query routing
+1. Phase 4 Plan 2: County scraper adapters
+   - Implement Municode adapter (SPA handling/API discovery)
+   - Implement eLaws adapter (Cheerio-based, server-rendered)
+   - Platform validation utilities
 2. Before production:
-   - Run small-scale test of Texas pipeline (single code + single title)
-   - Fix TypeScript errors in fetch-statutes.ts and parse-statutes.ts
+   - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
+   - Investigate Municode API endpoints for SPA scraping
    - Configure Pinecone API key and Convex URL in Workers secrets
 
 ---
@@ -246,4 +251,18 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 
 ---
 
-*State file updated: 2026-02-01*
+## Phase 4 Deliverables (In Progress)
+
+### County Data Pipeline
+
+**Plan 04-01 complete:**
+- **Source Research and Types (04-01):** County type system and source registry
+  - 6 TypeScript interfaces (CountyOrdinance, CourtOrder, CountySourceConfig, CountyChunk, CountyCheckpoint, CountyAdapter)
+  - 10 target Texas counties documented with platform and base URL
+  - Platform findings: 9 Municode, 1 eLaws (Dallas)
+  - 6 county citation functions (generateCountyCitation, generateCourtOrderCitation, etc.)
+  - Source registry helper functions: getEnabledCounties, getSkippedCounties, getCountyByName, getCountyByFips
+
+---
+
+*State file updated: 2026-02-02*
