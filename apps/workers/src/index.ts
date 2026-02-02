@@ -16,6 +16,16 @@ import {
   getCountyByName,
   validateCountySources,
 } from './counties';
+import {
+  processAllCities,
+  processSingleCity,
+  getMunicipalPipelineStatus,
+  resetMunicipalPipeline,
+  getEnabledCities,
+  getSkippedCities,
+  getCityByName,
+  getCityById,
+} from './municipal';
 
 /**
  * Cloudflare Worker for ComplianceIQ data pipeline
@@ -50,6 +60,10 @@ export default {
             'POST /pipeline/counties/:county - Trigger single county pipeline',
             'GET /pipeline/counties/status - Get county coverage status',
             'POST /pipeline/counties/validate - Validate county sources',
+            'POST /pipeline/municipal - Trigger municipal pipeline (20 Texas cities)',
+            'POST /pipeline/municipal/:city - Trigger single city pipeline',
+            'GET /pipeline/municipal/status - Get municipal pipeline status',
+            'POST /pipeline/municipal/reset - Reset municipal pipeline checkpoint',
           ],
         }),
         {
@@ -386,6 +400,155 @@ export default {
         });
       } catch (error) {
         console.error(`[Worker] Pipeline failed for ${countyConfig.name} County:`, error);
+        return new Response(
+          JSON.stringify({
+            error: 'Pipeline failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // =========================================================================
+    // Municipal Pipeline Endpoints
+    // =========================================================================
+
+    // POST /pipeline/municipal - Trigger full municipal pipeline (20 Texas cities)
+    if (url.pathname === '/pipeline/municipal' && request.method === 'POST') {
+      try {
+        console.log('[Worker] Starting full municipal pipeline');
+        const result = await processAllCities(env, { resumeFromCheckpoint: true });
+        return new Response(JSON.stringify(result), {
+          status: result.failed.length === 0 ? 200 : 207, // 207 Multi-Status if partial success
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Municipal pipeline failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Pipeline failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // GET /pipeline/municipal/status - Get municipal pipeline status and storage stats
+    if (url.pathname === '/pipeline/municipal/status' && request.method === 'GET') {
+      try {
+        const status = await getMunicipalPipelineStatus(env);
+        const enabled = getEnabledCities();
+        const skipped = getSkippedCities();
+
+        return new Response(
+          JSON.stringify(
+            {
+              totalCities: 20,
+              enabledCount: enabled.length,
+              skippedCount: skipped.length,
+              checkpoint: status.checkpoint,
+              storage: status.storage,
+              enabled: enabled.map((c) => ({
+                name: c.name,
+                cityId: c.cityId,
+                platform: c.platform,
+              })),
+              skipped: skipped.map((c) => ({
+                name: c.name,
+                cityId: c.cityId,
+                reason: c.skipReason,
+              })),
+            },
+            null,
+            2
+          ),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      } catch (error) {
+        console.error('[Worker] Municipal status check failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Status check failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /pipeline/municipal/reset - Clear checkpoint for fresh run
+    if (url.pathname === '/pipeline/municipal/reset' && request.method === 'POST') {
+      try {
+        console.log('[Worker] Resetting municipal pipeline checkpoint');
+        await resetMunicipalPipeline(env);
+        return new Response(
+          JSON.stringify({ success: true, message: 'Municipal checkpoint cleared' }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      } catch (error) {
+        console.error('[Worker] Municipal reset failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Reset failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /pipeline/municipal/:city - Trigger single city pipeline
+    const cityMatch = url.pathname.match(/^\/pipeline\/municipal\/([a-z_]+)$/i);
+    if (cityMatch && cityMatch[1] && request.method === 'POST') {
+      const cityIdOrName = cityMatch[1].replace(/_/g, '_'); // Keep underscores for cityId lookup
+      const city = getCityById(cityIdOrName) ?? getCityByName(cityIdOrName.replace(/_/g, ' '));
+
+      if (!city) {
+        return new Response(
+          JSON.stringify({ error: `Unknown city: ${cityIdOrName}` }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (!city.enabled) {
+        return new Response(
+          JSON.stringify({
+            error: `City is disabled: ${city.name}`,
+            reason: city.skipReason ?? 'No reason given',
+          }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log(`[Worker] Starting pipeline for ${city.name}`);
+        const result = await processSingleCity(env, city.cityId);
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error(`[Worker] Pipeline failed for ${city.name}:`, error);
         return new Response(
           JSON.stringify({
             error: 'Pipeline failed',
