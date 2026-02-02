@@ -13,3 +13,6 @@ export * from './cities';
 
 // Storage operations (R2, checkpoints, markdown cache)
 export * from './storage';
+
+// Chunking operations
+export * from './chunk';
