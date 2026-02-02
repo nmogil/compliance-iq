@@ -29,8 +29,17 @@ export {
 } from './sources';
 
 // Adapters
-export { CountyAdapterBase, loadCheerioPage } from './adapters/base';
-export { MunicodeAdapter } from './adapters/municode';
+export {
+  CountyAdapterBase,
+  loadCheerioPage,
+  MunicodeAdapter,
+  ElawsAdapter,
+  AmlegalAdapter,
+  getAdapterForCounty,
+  getAdaptersForEnabledCounties,
+  validateAllCountySources,
+  getAdapterStats,
+} from './adapters';
 
 // Storage
 export {
