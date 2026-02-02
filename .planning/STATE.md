@@ -19,19 +19,19 @@
 
 ## Current Position
 
-**Phase:** 4 of 10 (County Data)
-**Plan:** 5 of 6 in phase
-**Status:** In progress
-**Last activity:** 2026-02-02 - Completed 04-05-PLAN.md
+**Phase:** 4 of 10 (County Data) COMPLETE
+**Plan:** 6 of 6 in phase
+**Status:** Phase complete
+**Last activity:** 2026-02-02 - Completed 04-06-PLAN.md
 
 **Progress:**
 ```
-[███████████████████░] 38% (23/60 plans complete)
+[████████████████████] 40% (24/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
-Phase 4: County Data █████░░░ IN PROGRESS (5/6)
+Phase 4: County Data ████████ COMPLETE (6/6)
 ```
 
 ---
@@ -39,9 +39,9 @@ Phase 4: County Data █████░░░ IN PROGRESS (5/6)
 ## Performance Metrics
 
 ### Velocity
-- Phases completed: 3/10
-- Plans completed: 23/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 5/6)
-- Requirements delivered: 7/28 (DATA-01, DATA-02, DATA-07-10, COV-01)
+- Phases completed: 4/10
+- Plans completed: 24/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6)
+- Requirements delivered: 8/28 (DATA-01, DATA-02, DATA-03, DATA-07-10, COV-01)
 - Days since start: 1
 
 ### Quality
@@ -124,6 +124,10 @@ Phase 4: County Data █████░░░ IN PROGRESS (5/6)
 | TX-{fipsCode} jurisdiction format | 2026-02-02 | Enables county-level Pinecone filtering (e.g., TX-48201) | Active |
 | sourceType: 'county' for county vectors | 2026-02-02 | Distinguishes county vectors from federal and state | Active |
 | Reuse embedChunks for counties | 2026-02-02 | CountyChunk compatible with CFRChunk via type assertion | Active |
+| HTTP 207 for partial batch success | 2026-02-02 | Return 207 Multi-Status when some counties fail | Active |
+| by_county_fips Convex index | 2026-02-02 | Efficient FIPS code lookup without full table scan | Active |
+| Convex status field for jurisdictions | 2026-02-02 | Track pending/active/error pipeline state | Active |
+| Coverage report markdown format | 2026-02-02 | Human-readable documentation of county processing | Active |
 
 ### Recent Changes
 
@@ -160,15 +164,16 @@ Phase 4: County Data █████░░░ IN PROGRESS (5/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-05-PLAN.md: County Pipeline Orchestration
-- Created end-to-end county pipeline (fetch -> store -> chunk -> embed -> index)
-- processCounty handles single county, processAllCounties handles batch with checkpoint resumption
-- Pinecone indexing with sourceType: "county" and jurisdiction: "TX-{fipsCode}"
-- Best-effort Convex sync for freshness tracking
-- 2 commits: pipeline orchestrator, module exports
+- Completed 04-06-PLAN.md: County Endpoints and Coverage
+- Added 4 HTTP endpoints for county pipeline (batch, single, status, validate)
+- Updated Convex schema with status, lastScrapedAt, vectorCount, error fields
+- Created 4 Convex functions for county coverage tracking
+- Built coverage report generator with JSON and markdown output
+- Created test script for validating Pinecone jurisdiction filtering
+- 4 commits: endpoints, Convex update, coverage report, test script
 
 ### What's Next
-1. Phase 4 Plan 6: County pipeline testing and verification
+1. Phase 5: Ingestion API (admin interface for data management)
 2. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
    - Investigate Municode API endpoints for full SPA scraping
@@ -262,7 +267,7 @@ Phase 4: County Data █████░░░ IN PROGRESS (5/6)
 
 ---
 
-## Phase 4 Deliverables (In Progress)
+## Phase 4 Deliverables (COMPLETE)
 
 ### County Data Pipeline
 
@@ -316,6 +321,18 @@ Phase 4: County Data █████░░░ IN PROGRESS (5/6)
   - Best-effort Convex sync for freshness tracking
   - CountyPipelineResult and CountyBatchPipelineResult types
   - All pipeline exports available from counties/index.ts
+
+**Plan 04-06 complete:**
+- **HTTP Endpoints and Coverage (04-06):** Pipeline triggering and tracking
+  - POST /pipeline/counties - Process all 10 enabled Texas counties
+  - POST /pipeline/counties/:county - Process single county by name
+  - GET /pipeline/counties/status - Get enabled/skipped county status
+  - POST /pipeline/counties/validate - Validate all county sources
+  - Convex schema with status, lastScrapedAt, vectorCount, error fields
+  - by_county_fips index for efficient FIPS lookup
+  - listTexasCounties, updateCountyStatus, getCountyByFips, getTexasCountyCoverage functions
+  - Coverage report generator with JSON and markdown output
+  - Test script for Pinecone jurisdiction filtering validation
 
 ---
 
