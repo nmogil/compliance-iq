@@ -20,18 +20,18 @@
 ## Current Position
 
 **Phase:** 4 of 10 (County Data)
-**Plan:** 2 of 6 in phase
+**Plan:** 3 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 04-02-PLAN.md
+**Last activity:** 2026-02-02 - Completed 04-03-PLAN.md
 
 **Progress:**
 ```
-[████████████████░░░░] 33% (20/60 plans complete)
+[████████████████░░░░] 35% (21/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
-Phase 4: County Data ██░░░░░░ IN PROGRESS (2/6)
+Phase 4: County Data ███░░░░░ IN PROGRESS (3/6)
 ```
 
 ---
@@ -113,6 +113,9 @@ Phase 4: County Data ██░░░░░░ IN PROGRESS (2/6)
 | Multiple selector strategies | 2026-02-02 | Try multiple CSS selectors for HTML structure robustness | Active |
 | County R2 folder structure | 2026-02-02 | counties/{fipsCode}/chapter-{chapter}/{section}.html hierarchy | Active |
 | Single county checkpoint | 2026-02-02 | All counties share counties/checkpoints/county.json | Active |
+| ElawsAdapter 1000ms rate limit | 2026-02-02 | Conservative delay for eLaws server-rendered content | Active |
+| AmlegalAdapter 5000ms rate limit | 2026-02-02 | Required by robots.txt compliance for American Legal | Active |
+| Adapter factory pattern | 2026-02-02 | getAdapterForCounty returns platform-specific adapter | Active |
 
 ### Recent Changes
 
@@ -149,19 +152,20 @@ Phase 4: County Data ██░░░░░░ IN PROGRESS (2/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-02-PLAN.md: County Adapter Infrastructure
-- Created abstract CountyAdapterBase class with loadPage, validateSource, sleep utilities
-- Implemented MunicodeAdapter for library.municode.com (9 Texas counties)
-- Created R2 storage module with 7 functions for county ordinances and checkpoints
-- Exported new modules from counties/index.ts
-- 4 commits: base adapter, municode adapter, storage module, index exports
+- Completed 04-03-PLAN.md: eLaws and AmLegal Adapters with Factory
+- Created ElawsAdapter for Dallas County (eLaws platform, server-rendered)
+- Created AmlegalAdapter with 5-second robots.txt compliance
+- Implemented adapter factory (getAdapterForCounty) for platform-agnostic scraping
+- Added utility functions: getAdaptersForEnabledCounties, validateAllCountySources, getAdapterStats
+- Updated counties/index.ts to export all new adapters and factory functions
+- 4 commits: eLaws adapter, AmLegal adapter, factory index, base adapter fix
 
 ### What's Next
-1. Phase 4 Plan 3: eLaws adapter for Dallas County
-   - Implement ELawsAdapter for server-rendered HTML
-   - Test with dallascounty-tx.elaws.us
-2. Phase 4 Plan 4: County chunking module
+1. Phase 4 Plan 4: County chunking module
    - Chunk county ordinances for embedding
+   - Follow Texas chunking patterns
+2. Phase 4 Plan 5: County pipeline orchestration
+   - End-to-end fetch, chunk, embed, index
 3. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
    - Investigate Municode API endpoints for full SPA scraping
@@ -280,6 +284,15 @@ Phase 4: County Data ██░░░░░░ IN PROGRESS (2/6)
   - getCountyStorageStats for monitoring
   - R2 folder structure: counties/{fipsCode}/chapter-{chapter}/{section}.html
   - Checkpoint at: counties/checkpoints/county.json
+
+**Plan 04-03 complete:**
+- **eLaws and AmLegal Adapters (04-03):** Platform adapters with factory
+  - ElawsAdapter for Dallas County (eLaws platform, 1000ms rate limit)
+  - AmlegalAdapter with 5-second robots.txt compliance
+  - Adapter factory: getAdapterForCounty returns correct adapter per platform
+  - Utility functions: getAdaptersForEnabledCounties, validateAllCountySources
+  - getAdapterStats provides platform distribution statistics
+  - All adapters use multiple selector strategies for robustness
 
 ---
 
