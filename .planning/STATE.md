@@ -20,18 +20,18 @@
 ## Current Position
 
 **Phase:** 4 of 10 (County Data)
-**Plan:** 4 of 6 in phase
+**Plan:** 5 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 04-04-PLAN.md
+**Last activity:** 2026-02-02 - Completed 04-05-PLAN.md
 
 **Progress:**
 ```
-[██████████████████░░] 37% (22/60 plans complete)
+[███████████████████░] 38% (23/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
-Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
+Phase 4: County Data █████░░░ IN PROGRESS (5/6)
 ```
 
 ---
@@ -40,7 +40,7 @@ Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
 
 ### Velocity
 - Phases completed: 3/10
-- Plans completed: 22/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 4/6)
+- Plans completed: 23/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 5/6)
 - Requirements delivered: 7/28 (DATA-01, DATA-02, DATA-07-10, COV-01)
 - Days since start: 1
 
@@ -121,6 +121,9 @@ Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
 | Paragraph-based splitting for counties | 2026-02-02 | Used when sections have no subsections to split on | Active |
 | Sequential county processing | 2026-02-02 | Avoids API overload from parallel requests | Active |
 | Per-county checkpointing | 2026-02-02 | Enables resumption from exact county that failed | Active |
+| TX-{fipsCode} jurisdiction format | 2026-02-02 | Enables county-level Pinecone filtering (e.g., TX-48201) | Active |
+| sourceType: 'county' for county vectors | 2026-02-02 | Distinguishes county vectors from federal and state | Active |
+| Reuse embedChunks for counties | 2026-02-02 | CountyChunk compatible with CFRChunk via type assertion | Active |
 
 ### Recent Changes
 
@@ -157,19 +160,16 @@ Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 04-04-PLAN.md: County Chunking and Fetch Orchestrator
-- Created chunking module following texas/chunk.ts patterns (1500 token limit, 15% overlap)
-- Built fetch orchestrator using adapters for all enabled counties
-- Implemented checkpoint-based resumption for fault tolerance
-- Added statistics functions for monitoring chunk quality and fetch progress
-- 3 commits: chunk module, fetch orchestrator, index exports
+- Completed 04-05-PLAN.md: County Pipeline Orchestration
+- Created end-to-end county pipeline (fetch -> store -> chunk -> embed -> index)
+- processCounty handles single county, processAllCounties handles batch with checkpoint resumption
+- Pinecone indexing with sourceType: "county" and jurisdiction: "TX-{fipsCode}"
+- Best-effort Convex sync for freshness tracking
+- 2 commits: pipeline orchestrator, module exports
 
 ### What's Next
-1. Phase 4 Plan 5: County pipeline orchestration
-   - End-to-end fetch, chunk, embed, index
-   - HTTP endpoints for manual triggering
-2. Phase 4 Plan 6: County pipeline testing and verification
-3. Before production:
+1. Phase 4 Plan 6: County pipeline testing and verification
+2. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
    - Investigate Municode API endpoints for full SPA scraping
    - Configure Pinecone API key and Convex URL in Workers secrets
@@ -307,6 +307,15 @@ Phase 4: County Data ████░░░░ IN PROGRESS (4/6)
   - fetchAllEnabledCounties for batch processing all counties
   - Checkpoint-based resumption for fault tolerance
   - Sequential county processing to avoid API overload
+
+**Plan 04-05 complete:**
+- **Pipeline Orchestration (04-05):** End-to-end county pipeline
+  - processCounty for single county processing (fetch -> store -> chunk -> embed -> index)
+  - processAllCounties for batch processing with checkpoint-based resumption
+  - Pinecone indexing with sourceType: "county" and jurisdiction: "TX-{fipsCode}"
+  - Best-effort Convex sync for freshness tracking
+  - CountyPipelineResult and CountyBatchPipelineResult types
+  - All pipeline exports available from counties/index.ts
 
 ---
 
