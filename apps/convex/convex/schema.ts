@@ -28,12 +28,20 @@ export default defineSchema({
     // City-specific fields (null for federal/state/county)
     cityName: v.optional(v.string()), // e.g., "Houston"
     isActive: v.boolean(), // Whether we're actively tracking this jurisdiction
+    // Pipeline status tracking (added for county coverage)
+    status: v.optional(
+      v.union(v.literal('pending'), v.literal('active'), v.literal('error'))
+    ),
+    lastScrapedAt: v.optional(v.number()), // Timestamp of last pipeline run
+    vectorCount: v.optional(v.number()), // Number of vectors in Pinecone
+    error: v.optional(v.string()), // Error message if status is 'error'
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index('by_type', ['type'])
     .index('by_state', ['stateCode'])
-    .index('by_active', ['isActive']),
+    .index('by_active', ['isActive'])
+    .index('by_county_fips', ['countyFips']),
 
   // Sources table: Regulatory data sources within jurisdictions
   sources: defineTable({
