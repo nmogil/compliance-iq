@@ -154,6 +154,16 @@ Plans:
 
 **Dependencies:** Phase 3
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 04-01-PLAN.md -- County source research, types, and citation generators
+- [ ] 04-02-PLAN.md -- Adapter infrastructure and MunicipalCodeOnline adapter
+- [ ] 04-03-PLAN.md -- eLaws and American Legal adapters with factory
+- [ ] 04-04-PLAN.md -- County chunking module and fetch orchestrator
+- [ ] 04-05-PLAN.md -- County pipeline orchestration with Pinecone indexing
+- [ ] 04-06-PLAN.md -- HTTP endpoints and Convex jurisdictions table
+
 **Requirements Covered:**
 - DATA-06: County regulation scraper extracts from top 10 Texas counties
 - COV-04: Top 10 Texas counties by Costco presence (Harris, Dallas, Tarrant, Bexar, Travis, Collin, Denton, Fort Bend, Williamson, El Paso)
