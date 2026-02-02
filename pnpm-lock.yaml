@@ -20,6 +20,9 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.39.2(jiti@2.6.1)
+      openai:
+        specifier: ^6.17.0
+        version: 6.17.0(ws@8.18.0)(zod@4.3.6)
       prettier:
         specifier: ^3.4.2
         version: 3.8.1
