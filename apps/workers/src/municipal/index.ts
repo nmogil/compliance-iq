@@ -33,6 +33,13 @@ export * from './parser';
 // Chunking for embeddings
 export * from './chunk';
 
+// Coverage reporting
+export {
+  generateMunicipalCoverageReport,
+  formatCoverageReportMarkdown,
+  type MunicipalCoverageReport,
+} from './coverage';
+
 // Fetch orchestrator
 export {
   fetchCity,
