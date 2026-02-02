@@ -20,19 +20,19 @@
 ## Current Position
 
 **Phase:** 5 of 10 (Municipal Data)
-**Plan:** 4 of 6 in phase (05-01, 05-02, 05-03, 05-04 complete)
+**Plan:** 5 of 6 in phase (05-01, 05-02, 05-03, 05-04, 05-05 complete)
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 05-02-PLAN.md (scraper/parser)
+**Last activity:** 2026-02-02 - Completed 05-05-PLAN.md (pipeline orchestration)
 
 **Progress:**
 ```
-[██████████████████████████] 45% (27/60 plans complete)
+[████████████████████████████] 47% (28/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
-Phase 5: Municipal Data ████░░░░ In Progress (4/6)
+Phase 5: Municipal Data █████░░░ In Progress (5/6)
 ```
 
 ---
@@ -41,7 +41,7 @@ Phase 5: Municipal Data ████░░░░ In Progress (4/6)
 
 ### Velocity
 - Phases completed: 4/10
-- Plans completed: 27/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 4/6)
+- Plans completed: 28/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 5/6)
 - Requirements delivered: 10/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04)
 - Days since start: 1
 
@@ -138,6 +138,11 @@ Phase 5: Municipal Data ████░░░░ In Progress (4/6)
 | Firecrawl v2 scrape() method | 2026-02-02 | SDK exports Firecrawl class with scrape() not scrapeUrl() | Active |
 | marked Token type import | 2026-02-02 | marked v17 exports Token as top-level type, not Tokens.Token | Active |
 | Two-pass subsection detection | 2026-02-02 | Try inline patterns first, then line-start patterns for flexibility | Active |
+| TX-{cityId} jurisdiction format | 2026-02-02 | Enables municipal-level Pinecone filtering (e.g., TX-houston) | Active |
+| sourceType: 'municipal' for municipal vectors | 2026-02-02 | Distinguishes municipal vectors from federal, state, county | Active |
+| Reuse embedChunks for municipal | 2026-02-02 | MunicipalChunk compatible with CFRChunk via type assertion | Active |
+| 30-day markdown cache TTL | 2026-02-02 | Balance freshness with Firecrawl credit costs | Active |
+| 2000ms delay between cities | 2026-02-02 | Conservative rate limiting for Firecrawl API | Active |
 
 ### Recent Changes
 
@@ -174,18 +179,19 @@ Phase 5: Municipal Data ████░░░░ In Progress (4/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 05-02-PLAN.md: Firecrawl Scraper and Markdown Parser
-- Installed @mendable/firecrawl-js@4.12.0 and marked@17.0.1 dependencies
-- Created scraper.ts with scrapeMunicipalCode, scrapeCity, scrapeAllCities
-- Created parser.ts with parseMarkdownToOrdinances, extractSections, validateOrdinances
-- FirecrawlError class with city/platform context for debugging
-- Platform-specific waitFor: 2000ms Municode, 1000ms American Legal
-- 30-day default cache expiration for markdown content
-- Skip-and-log batch processing pattern
+- Completed 05-05-PLAN.md: Municipal Pipeline Orchestration
+- Created fetch.ts with fetchCity, fetchAllEnabledCities, fetchSingleCity
+- Created pipeline.ts with processCity, processAllCities, processSingleCity
+- Updated index.ts to export all 8 municipal modules
+- End-to-end pipeline: fetch -> store -> chunk -> embed -> index
+- Pinecone vectors with TX-{cityId} jurisdiction (e.g., TX-houston)
+- sourceType: 'municipal' for Pinecone filtering
+- Skip-and-log pattern continues processing after city failures
+- Checkpoint-based resumption for fault tolerance
+- 30-day markdown cache TTL to minimize Firecrawl costs
 
 ### What's Next
-1. Continue Phase 5 Municipal Data:
-   - 05-05: Pipeline orchestration
+1. Complete Phase 5 Municipal Data:
    - 05-06: HTTP endpoints and coverage
 2. Before production:
    - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
@@ -396,6 +402,21 @@ Phase 5: Municipal Data ████░░░░ In Progress (4/6)
   - Bluebook citations via generateMunicipalCitation
   - Hierarchy breadcrumbs via generateMunicipalHierarchy
   - ChunkStats interface for statistics typing
+  - All exports available from municipal/index.ts
+
+**Plan 05-05 complete:**
+- **Pipeline Orchestration (05-05):** End-to-end municipal pipeline
+  - fetchCity: Fetch single city with markdown caching (30-day TTL)
+  - fetchAllEnabledCities: Batch fetch with skip-and-log error handling
+  - fetchSingleCity: HTTP endpoint helper for single city lookup
+  - processCity: Full pipeline fetch -> chunk -> embed -> index
+  - processAllCities: Batch processing with checkpoint-based resumption
+  - processSingleCity: HTTP endpoint helper for single city processing
+  - getMunicipalPipelineStatus: Status query with storage stats
+  - resetMunicipalPipeline: Clear checkpoint for fresh run
+  - Pinecone vectors with TX-{cityId} jurisdiction (e.g., TX-houston)
+  - sourceType: 'municipal' for Pinecone filtering
+  - MunicipalPipelineResult and MunicipalBatchPipelineResult types
   - All exports available from municipal/index.ts
 
 ---
