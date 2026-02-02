@@ -20,19 +20,19 @@
 ## Current Position
 
 **Phase:** 5 of 10 (Municipal Data)
-**Plan:** 4 of 6 in phase (05-01, 05-03 also complete)
+**Plan:** 4 of 6 in phase (05-01, 05-02, 05-03, 05-04 complete)
 **Status:** In progress
-**Last activity:** 2026-02-02 - Completed 05-04-PLAN.md (chunking module)
+**Last activity:** 2026-02-02 - Completed 05-02-PLAN.md (scraper/parser)
 
 **Progress:**
 ```
-[█████████████████████████] 43% (26/60 plans complete)
+[██████████████████████████] 45% (27/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
 Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
-Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
+Phase 5: Municipal Data ████░░░░ In Progress (4/6)
 ```
 
 ---
@@ -41,7 +41,7 @@ Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
 
 ### Velocity
 - Phases completed: 4/10
-- Plans completed: 26/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 3/6)
+- Plans completed: 27/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 4/6)
 - Requirements delivered: 10/28 (DATA-01, DATA-02, DATA-03, DATA-06, DATA-07-10, COV-01, COV-04)
 - Days since start: 1
 
@@ -135,6 +135,9 @@ Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
 | Single municipal checkpoint | 2026-02-02 | All cities share municipal/checkpoints/municipal.json | Active |
 | Markdown cache for Firecrawl | 2026-02-02 | Cache raw markdown in R2 to minimize Firecrawl credit usage | Active |
 | maxAgeMs cache expiration | 2026-02-02 | Markdown cache supports age-based invalidation | Active |
+| Firecrawl v2 scrape() method | 2026-02-02 | SDK exports Firecrawl class with scrape() not scrapeUrl() | Active |
+| marked Token type import | 2026-02-02 | marked v17 exports Token as top-level type, not Tokens.Token | Active |
+| Two-pass subsection detection | 2026-02-02 | Try inline patterns first, then line-start patterns for flexibility | Active |
 
 ### Recent Changes
 
@@ -171,17 +174,17 @@ Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed 05-04-PLAN.md: Municipal Chunking Module
-- Created chunk.ts with subsection-aware splitting (381 lines)
-- Exported chunkMunicipalOrdinance, chunkCity, getMunicipalChunkStats, ChunkStats from municipal/index.ts
-- MAX_TOKENS=1500, OVERLAP_PERCENT=0.15 matching federal/state/county patterns
-- Three chunking cases: single chunk, subsection split, paragraph split
-- Bluebook citations via generateMunicipalCitation
-- Hierarchy breadcrumbs via generateMunicipalHierarchy
+- Completed 05-02-PLAN.md: Firecrawl Scraper and Markdown Parser
+- Installed @mendable/firecrawl-js@4.12.0 and marked@17.0.1 dependencies
+- Created scraper.ts with scrapeMunicipalCode, scrapeCity, scrapeAllCities
+- Created parser.ts with parseMarkdownToOrdinances, extractSections, validateOrdinances
+- FirecrawlError class with city/platform context for debugging
+- Platform-specific waitFor: 2000ms Municode, 1000ms American Legal
+- 30-day default cache expiration for markdown content
+- Skip-and-log batch processing pattern
 
 ### What's Next
 1. Continue Phase 5 Municipal Data:
-   - 05-02: Scraper/parser with Firecrawl
    - 05-05: Pipeline orchestration
    - 05-06: HTTP endpoints and coverage
 2. Before production:
@@ -368,6 +371,21 @@ Phase 5: Municipal Data ███░░░░░ In Progress (3/6)
   - R2 folder structure: municipal/{cityId}/chapter-{chapter}/{section}.json
   - Markdown cache: municipal/{cityId}/raw/page.md
   - Checkpoint: municipal/checkpoints/municipal.json
+
+**Plan 05-02 complete:**
+- **Firecrawl Scraper and Parser (05-02):** Scraping and parsing infrastructure
+  - @mendable/firecrawl-js@4.12.0 and marked@17.0.1 dependencies
+  - scrapeMunicipalCode for single page scraping via Firecrawl
+  - scrapeCity with R2 markdown caching (30-day default expiration)
+  - scrapeAllCities batch processing with skip-and-log pattern
+  - FirecrawlError class with city/platform context
+  - parseMarkdownToOrdinances using marked lexer
+  - extractSections for quick section listing
+  - validateOrdinances with warnings for parsing issues
+  - Chapter detection from level 1-2 headings
+  - Section detection from level 2-4 headings with flexible patterns
+  - Subsection extraction: (a), (b), (1), (2), (i), (ii)
+  - Platform-specific waitFor: 2000ms Municode, 1000ms American Legal
 
 **Plan 05-04 complete:**
 - **Chunking Module (05-04):** Municipal ordinance chunking
