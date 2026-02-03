@@ -19,14 +19,14 @@
 
 ## Current Position
 
-**Phase:** 6 of 10 (Data Processing) - COMPLETE
-**Plan:** 7 of 7 in phase
-**Status:** Phase complete
-**Last activity:** 2026-02-03 - Completed 06-07-PLAN.md (Data pipeline documentation)
+**Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
+**Plan:** 1 of 6 in phase
+**Status:** In progress
+**Last activity:** 2026-02-03 - Completed 07-01-PLAN.md (Query pipeline foundation)
 
 **Progress:**
 ```
-[████████████████████████████████] 62% (37/60 plans complete)
+[█████████████████████████████████] 63% (38/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,6 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
+Phase 7: Query Pipeline █░░░░░░░ IN PROGRESS (1/6)
 ```
 
 ---
@@ -151,6 +152,9 @@ Phase 6: Data Processing ████████ COMPLETE (7/7)
 | Type casting for Pinecone index | 2026-02-03 | Use 'as any' for Index<RecordMetadata> to Index<ChunkMetadata> compatibility | Active |
 | Three-tier chunking fallback | 2026-02-03 | Whole section → subsection split → paragraph split preserves legal structure | Active |
 | 945-line pipeline documentation | 2026-02-03 | Comprehensive reference covering all pipeline stages and source types | Active |
+| Flat RetrievedChunk interface | 2026-02-03 | Simpler access patterns for answer generation vs nested metadata | Active |
+| Federal-only geocoding fallback | 2026-02-03 | Invalid address never breaks query pipeline, federal regulations always apply | Active |
+| City normalization with hyphens | 2026-02-03 | Lowercase + hyphens for consistent jurisdiction IDs (e.g., TX-fort-worth) | Active |
 
 ### Recent Changes
 
@@ -637,26 +641,24 @@ Phase 6: Data Processing ████████ COMPLETE (7/7)
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 6: Data Processing (all 7 plans executed)
-- Wave 1 (plans 01-03): Types, token analyzer, metadata validator
-- Wave 2 (plans 04-05): Coverage checker, quality reporter
-- Wave 3 (plans 06-07): HTTP endpoints, pipeline documentation
-- Final deliverables: 4 HTTP validation endpoints + CLI script + 945-line documentation
-- Created docs/DATA-PROCESSING.md with comprehensive pipeline reference
-- Documented chunking strategies, metadata schema, R2 structure, embeddings, quality metrics
-- Phase verified: All must-haves met, validation suite + docs ready for production
+- Completed Phase 7 Plan 1: Query Pipeline Foundation
+- Created 9 TypeScript interfaces for query pipeline (QueryRequest, QueryResult, JurisdictionResult, RetrievedChunk, Citation, Permit, ConfidenceScore, JurisdictionSection, GeneratedAnswer)
+- Implemented Geocodio-based geocoding service with federal/state/county/municipal jurisdiction extraction
+- Established jurisdiction array format: ['US', 'TX', 'TX-48201', 'TX-houston']
+- Graceful error handling with federal-only fallback
+- 2 files created: apps/convex/convex/query/types.ts, apps/convex/convex/lib/geocode.ts
+- 2 atomic commits: 7ecd0db (types), 69e617d (geocoding)
+- Duration: 3 minutes
 
 ### What's Next
-1. Phase 7: Query Processing - RAG query pipeline with embedding generation and semantic search
-2. Phase 8: Answer Generation - LLM-based answer synthesis with citations
-3. Phase 9: Frontend Features - User interface for submitting queries and viewing answers
-4. Phase 10: Testing and Launch - End-to-end testing and production deployment
-5. Before production:
-   - Configure FIRECRAWL_API_KEY in Cloudflare Workers secrets
-   - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
-   - Ensure R2_BUCKET binding matches DOCUMENTS_BUCKET in wrangler.jsonc
-   - Run pipelines to populate Pinecone
-   - Test validation endpoints and CLI script with real data
+1. Phase 7 Plan 2: Query embedding generation (convert question to vector)
+2. Phase 7 Plan 3: Pinecone retrieval with jurisdiction filtering
+3. Phase 7 Plan 4: Claude answer generation with citations
+4. Before production:
+   - Configure GEOCODIO_API_KEY in Convex environment
+   - Configure ANTHROPIC_API_KEY for answer generation
+   - Configure OPENAI_API_KEY for embeddings
+   - Test end-to-end query pipeline with real addresses and questions
 
 ---
 
