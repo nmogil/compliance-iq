@@ -20,13 +20,13 @@
 ## Current Position
 
 **Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
-**Plan:** 1 of 6 in phase
+**Plan:** 2 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-03 - Completed 07-01-PLAN.md (Query pipeline foundation)
+**Last activity:** 2026-02-03 - Completed 07-02-PLAN.md (Query embedding & retrieval)
 
 **Progress:**
 ```
-[█████████████████████████████████] 63% (38/60 plans complete)
+[██████████████████████████████████] 65% (39/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,7 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
-Phase 7: Query Pipeline █░░░░░░░ IN PROGRESS (1/6)
+Phase 7: Query Pipeline ██░░░░░░ IN PROGRESS (2/6)
 ```
 
 ---
@@ -43,8 +43,8 @@ Phase 7: Query Pipeline █░░░░░░░ IN PROGRESS (1/6)
 
 ### Velocity
 - Phases completed: 6/10
-- Plans completed: 37/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7)
-- Requirements delivered: 13/28 (DATA-01 through DATA-10, COV-01 through COV-05)
+- Plans completed: 39/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 2/6)
+- Requirements delivered: 14/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-03)
 - Days since start: 3
 
 ### Quality
@@ -137,6 +137,10 @@ Phase 7: Query Pipeline █░░░░░░░ IN PROGRESS (1/6)
 | Single municipal checkpoint | 2026-02-02 | All cities share municipal/checkpoints/municipal.json | Active |
 | Markdown cache for Firecrawl | 2026-02-02 | Cache raw markdown in R2 to minimize Firecrawl credit usage | Active |
 | maxAgeMs cache expiration | 2026-02-02 | Markdown cache supports age-based invalidation | Active |
+| text-embedding-3-large for queries | 2026-02-03 | Matches chunk embedding model from Phase 6 for semantic consistency | Active |
+| $or filter for multi-jurisdiction queries | 2026-02-03 | Enables efficient single Pinecone query across federal/state/county/municipal | Active |
+| Weighted reranking (80% similarity, 20% recency) | 2026-02-03 | Balances semantic relevance with regulatory currency | Active |
+| Top-50 retrieval, rerank to top-10 | 2026-02-03 | Broad initial retrieval with precision optimization via reranking | Active |
 | Firecrawl v2 scrape() method | 2026-02-02 | SDK exports Firecrawl class with scrape() not scrapeUrl() | Active |
 | marked Token type import | 2026-02-02 | marked v17 exports Token as top-level type, not Tokens.Token | Active |
 | Two-pass subsection detection | 2026-02-02 | Try inline patterns first, then line-start patterns for flexibility | Active |
@@ -641,23 +645,23 @@ Phase 7: Query Pipeline █░░░░░░░ IN PROGRESS (1/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 7 Plan 1: Query Pipeline Foundation
-- Created 9 TypeScript interfaces for query pipeline (QueryRequest, QueryResult, JurisdictionResult, RetrievedChunk, Citation, Permit, ConfidenceScore, JurisdictionSection, GeneratedAnswer)
-- Implemented Geocodio-based geocoding service with federal/state/county/municipal jurisdiction extraction
-- Established jurisdiction array format: ['US', 'TX', 'TX-48201', 'TX-houston']
-- Graceful error handling with federal-only fallback
-- 2 files created: apps/convex/convex/query/types.ts, apps/convex/convex/lib/geocode.ts
-- 2 atomic commits: 7ecd0db (types), 69e617d (geocoding)
-- Duration: 3 minutes
+- Completed Phase 7 Plan 2: Query Embedding & Retrieval
+- Created query embedding module using OpenAI text-embedding-3-large (3072-dimension vectors)
+- Implemented Pinecone retrieval with $or jurisdiction filtering for multi-jurisdiction queries
+- Built weighted reranking algorithm (80% similarity + 20% recency bonus)
+- Added openai and @pinecone-database/pinecone dependencies to Convex app
+- 2 files created: apps/convex/convex/lib/embed.ts, apps/convex/convex/lib/retrieve.ts
+- 2 atomic commits: bace8e3 (embedding), f23561d (retrieval)
+- Duration: 3.6 minutes
 
 ### What's Next
-1. Phase 7 Plan 2: Query embedding generation (convert question to vector)
-2. Phase 7 Plan 3: Pinecone retrieval with jurisdiction filtering
-3. Phase 7 Plan 4: Claude answer generation with citations
+1. Phase 7 Plan 3: Claude answer generation with citations
+2. Phase 7 Plan 4: Confidence scoring based on retrieval metrics
+3. Phase 7 Plan 5: Query orchestration action (geocode → embed → retrieve → generate)
 4. Before production:
-   - Configure GEOCODIO_API_KEY in Convex environment
+   - Configure OPENAI_API_KEY in Convex environment
    - Configure ANTHROPIC_API_KEY for answer generation
-   - Configure OPENAI_API_KEY for embeddings
+   - Configure PINECONE_API_KEY for vector search
    - Test end-to-end query pipeline with real addresses and questions
 
 ---
