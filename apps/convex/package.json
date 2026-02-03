@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@compliance-iq/shared-types": "workspace:*",
+    "@pinecone-database/pinecone": "^6.1.4",
     "convex": "^1.17.5",
     "openai": "^6.17.0"
   },
