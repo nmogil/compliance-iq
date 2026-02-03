@@ -26,6 +26,11 @@ import {
   getCityByName,
   getCityById,
 } from './municipal';
+import {
+  checkCoverage,
+  generateFullValidationReport,
+  formatValidationResultMarkdown,
+} from './validation';
 
 /**
  * Cloudflare Worker for ComplianceIQ data pipeline
@@ -64,6 +69,10 @@ export default {
             'POST /pipeline/municipal/:city - Trigger single city pipeline',
             'GET /pipeline/municipal/status - Get municipal pipeline status',
             'POST /pipeline/municipal/reset - Reset municipal pipeline checkpoint',
+            'GET /validation/coverage - Get coverage report for all jurisdictions',
+            'GET /validation/quality - Get data quality validation report (JSON)',
+            'GET /validation/report - Get data quality validation report (Markdown)',
+            'GET /validation/summary - Get quick validation summary',
           ],
         }),
         {
@@ -552,6 +561,189 @@ export default {
         return new Response(
           JSON.stringify({
             error: 'Pipeline failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // =========================================================================
+    // Validation Endpoints
+    // =========================================================================
+
+    // GET /validation/coverage - Coverage report for all jurisdictions
+    if (url.pathname === '/validation/coverage' && request.method === 'GET') {
+      if (!env.PINECONE_API_KEY) {
+        return new Response(
+          JSON.stringify({ error: 'PINECONE_API_KEY not configured' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log('[Worker] Generating coverage report');
+        const startTime = Date.now();
+
+        const { Pinecone } = await import('@pinecone-database/pinecone');
+        const pinecone = new Pinecone({ apiKey: env.PINECONE_API_KEY });
+        const index = pinecone.index('compliance-embeddings');
+
+        const coverageReport = await checkCoverage(index as any);
+        const duration = Date.now() - startTime;
+
+        console.log(`[Worker] Coverage report generated in ${duration}ms`);
+
+        return new Response(JSON.stringify(coverageReport, null, 2), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Coverage report failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Coverage report failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // GET /validation/quality - Quality validation report (JSON)
+    if (url.pathname === '/validation/quality' && request.method === 'GET') {
+      if (!env.PINECONE_API_KEY) {
+        return new Response(
+          JSON.stringify({ error: 'PINECONE_API_KEY not configured' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log('[Worker] Generating quality validation report');
+        const startTime = Date.now();
+
+        const { Pinecone } = await import('@pinecone-database/pinecone');
+        const pinecone = new Pinecone({ apiKey: env.PINECONE_API_KEY });
+        const index = pinecone.index('compliance-embeddings');
+
+        const validationResult = await generateFullValidationReport(index as any);
+        const duration = Date.now() - startTime;
+
+        console.log(`[Worker] Quality validation completed in ${duration}ms`);
+
+        return new Response(JSON.stringify(validationResult, null, 2), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Quality validation failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Quality validation failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // GET /validation/report - Quality validation report (Markdown)
+    if (url.pathname === '/validation/report' && request.method === 'GET') {
+      if (!env.PINECONE_API_KEY) {
+        return new Response(
+          JSON.stringify({ error: 'PINECONE_API_KEY not configured' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log('[Worker] Generating markdown validation report');
+        const startTime = Date.now();
+
+        const { Pinecone } = await import('@pinecone-database/pinecone');
+        const pinecone = new Pinecone({ apiKey: env.PINECONE_API_KEY });
+        const index = pinecone.index('compliance-embeddings');
+
+        const validationResult = await generateFullValidationReport(index as any);
+        const markdown = formatValidationResultMarkdown(validationResult);
+        const duration = Date.now() - startTime;
+
+        console.log(`[Worker] Markdown report generated in ${duration}ms`);
+
+        return new Response(markdown, {
+          status: 200,
+          headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
+        });
+      } catch (error) {
+        console.error('[Worker] Markdown report failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Markdown report failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // GET /validation/summary - Quick validation summary
+    if (url.pathname === '/validation/summary' && request.method === 'GET') {
+      if (!env.PINECONE_API_KEY) {
+        return new Response(
+          JSON.stringify({ error: 'PINECONE_API_KEY not configured' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      try {
+        console.log('[Worker] Generating validation summary');
+        const startTime = Date.now();
+
+        const { Pinecone } = await import('@pinecone-database/pinecone');
+        const pinecone = new Pinecone({ apiKey: env.PINECONE_API_KEY });
+        const index = pinecone.index('compliance-embeddings');
+
+        // Run both coverage and quality reports
+        const [coverageReport, validationResult] = await Promise.all([
+          checkCoverage(index as any),
+          generateFullValidationReport(index as any),
+        ]);
+
+        const duration = Date.now() - startTime;
+
+        const summary = {
+          timestamp: new Date().toISOString(),
+          coveragePercent: coverageReport.coveragePercent,
+          totalChunks: validationResult.summary.totalChunks,
+          avgTokens: validationResult.summary.avgTokens,
+          issuesCount: validationResult.summary.issuesCount,
+          durationMs: duration,
+        };
+
+        console.log(`[Worker] Summary generated in ${duration}ms`);
+
+        return new Response(JSON.stringify(summary, null, 2), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Summary generation failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Summary generation failed',
             message: error instanceof Error ? error.message : 'Unknown error',
           }),
           {
