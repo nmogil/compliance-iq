@@ -265,6 +265,16 @@ Plans:
 
 **Dependencies:** Phase 6
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 07-01-PLAN.md -- Query types and geocoding service (Geocodio)
+- [ ] 07-02-PLAN.md -- Embedding and Pinecone retrieval with reranking
+- [ ] 07-03-PLAN.md -- Confidence scoring and Claude prompt templates
+- [ ] 07-04-PLAN.md -- Claude answer generation and response parsing
+- [ ] 07-05-PLAN.md -- Query orchestration action with persistence
+- [ ] 07-06-PLAN.md -- Query retrieval functions and test script
+
 **Requirements Covered:**
 - QUERY-01: User can ask natural language compliance questions
 - QUERY-02: System resolves address to applicable jurisdictions (federal, state, county, municipal)
@@ -275,17 +285,18 @@ Plans:
 
 **Success Criteria:**
 1. User submits natural language query and receives regulatory answer
-2. Address in query triggers geocoding (Mapbox) and jurisdiction resolution
-3. Pinecone vector search returns top 20 relevant chunks filtered by jurisdiction
+2. Address in query triggers geocoding (Geocodio) and jurisdiction resolution
+3. Pinecone vector search returns top 15 relevant chunks filtered by jurisdiction
 4. Claude LLM generates response citing specific statutes, regulations, ordinances
 5. Response includes permit/license requirements with agency names and URLs
 
 **Deliverables:**
-- Convex action: query.execute (geocode -> search -> LLM -> parse -> store)
-- Mapbox integration for address -> jurisdiction resolution
-- Pinecone search with metadata filtering
+- Convex action: processQuery (geocode -> embed -> retrieve -> generate -> parse -> persist)
+- Geocodio integration for address -> jurisdiction resolution
+- Pinecone search with metadata filtering and reranking
 - Claude prompt engineering for compliance responses with citations
 - Citation parser extracts structured references from LLM output
+- Confidence scoring based on retrieval metrics
 
 ---
 
