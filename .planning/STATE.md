@@ -19,14 +19,14 @@
 
 ## Current Position
 
-**Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
-**Plan:** 5 of 6 in phase
-**Status:** In progress
-**Last activity:** 2026-02-03 - Completed 07-05-PLAN.md (Query orchestration & persistence)
+**Phase:** 7 of 10 (Query Pipeline) - COMPLETE
+**Plan:** 6 of 6 in phase
+**Status:** Phase complete
+**Last activity:** 2026-02-03 - Completed 07-06-PLAN.md (Query retrieval & end-to-end testing)
 
 **Progress:**
 ```
-[███████████████████████████████████] 70% (42/60 plans complete)
+[███████████████████████████████████] 72% (43/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,7 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
-Phase 7: Query Pipeline █████░░░ IN PROGRESS (5/6)
+Phase 7: Query Pipeline ████████ COMPLETE (6/6)
 ```
 
 ---
@@ -42,9 +42,9 @@ Phase 7: Query Pipeline █████░░░ IN PROGRESS (5/6)
 ## Performance Metrics
 
 ### Velocity
-- Phases completed: 6/10
-- Plans completed: 42/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 5/6)
-- Requirements delivered: 16/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-01, QUERY-03, QUERY-04, QUERY-06, QUERY-07)
+- Phases completed: 7/10
+- Plans completed: 43/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 6/6)
+- Requirements delivered: 17/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-01, QUERY-02, QUERY-03, QUERY-04, QUERY-06, QUERY-07)
 - Days since start: 3
 
 ### Quality
@@ -174,6 +174,9 @@ Phase 7: Query Pipeline █████░░░ IN PROGRESS (5/6)
 | Graceful geocoding fallback | 2026-02-03 | Fall back to federal-only on missing API key or geocoding error | Active |
 | Citation format adaptation | 2026-02-03 | Map rich Citation type to schema's message citations with placeholder sourceId | Active |
 | System user placeholder | 2026-02-03 | Hard-code userId as 'system' until Phase 8 auth implementation | Active |
+| Environment validation in test script | 2026-02-03 | Fail fast with helpful hints for missing API keys before execution | Active |
+| Convex root dependency | 2026-02-03 | Added convex to root package.json for script execution access | Active |
+| Optional userId in getUserHistory | 2026-02-03 | Support filtering by userId for Phase 8 auth integration readiness | Active |
 
 ### Recent Changes
 
@@ -670,23 +673,25 @@ Phase 7: Query Pipeline █████░░░ IN PROGRESS (5/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 7 Plan 5: Query Orchestration & Persistence
-- Created processQuery action orchestrating full RAG pipeline (geocode → embed → retrieve → confidence → prompt → generate → parse → persist)
-- Built saveQueryResult internal mutation for persisting to conversations and messages
-- Implemented graceful geocoding fallback to federal-only jurisdictions on error
-- Adapted rich Citation types to schema-constrained message citations
-- 2 files created: apps/convex/convex/actions/query.ts, apps/convex/convex/mutations/saveQuery.ts
-- 2 atomic commits: 48ac565 (mutation), d30c87d (action)
-- Duration: 5 minutes
+- Completed Phase 7 Plan 6: Query Retrieval & End-to-End Testing
+- Created query retrieval functions (getQueryByConversation, getLatestQuery, getUserHistory)
+- Built end-to-end test script with environment validation and formatted output
+- Documented all required environment variables in .env.example files
+- TypeScript strict null checks handled for optional query parameters
+- 5 files created: queries/getQuery.ts, queries/getHistory.ts, scripts/test-query.ts, .env.example (root + convex)
+- 3 atomic commits: 4a836b1 (query retrieval), b61e3f7 (test script), 32b536d (env docs)
+- Duration: 4 minutes
+- **Phase 7 complete - all 6 plans executed**
 
 ### What's Next
-1. Phase 7 Plan 6: Frontend integration (call processQuery from React UI)
-2. Phase 8: User authentication (replace 'system' userId with real auth)
-3. Phase 9: Streaming (QUERY-05 - enhance processQuery with streaming support)
-4. Before testing:
-   - Run `npx convex dev` to regenerate API types for internal.mutations reference
-   - Configure API keys in Convex environment (OPENAI_API_KEY, PINECONE_API_KEY, ANTHROPIC_API_KEY, optional GEOCODIO_API_KEY)
-   - Test end-to-end query pipeline with real questions
+1. **Phase 8: Answer Generation UI** - Display query results in React frontend
+2. Phase 9: Authentication & Authorization - Replace 'system' userId with real auth
+3. Phase 10: Streaming & Feedback - Add streaming responses and user feedback
+4. Before testing query pipeline:
+   - Execute plan 07-05 (processQuery action) if not already complete
+   - Configure API keys in .env (OPENAI_API_KEY, PINECONE_API_KEY, ANTHROPIC_API_KEY, optional GEOCODIO_API_KEY)
+   - Run `pnpm install` to install convex dependency at root
+   - Run test script: `pnpm test:query "What permits do I need?" "Houston, TX"`
 
 ---
 
