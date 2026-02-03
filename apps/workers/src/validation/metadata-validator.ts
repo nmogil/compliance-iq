@@ -1,4 +1,5 @@
 import type { ChunkMetadata } from '../pinecone';
+import type { MetadataCompleteness } from './types';
 
 /**
  * Result of validating a single chunk's metadata.
@@ -10,18 +11,6 @@ export interface MetadataValidationResult {
   missingRequired: string[];
   /** Warnings for missing optional but recommended fields */
   warnings: string[];
-}
-
-/**
- * Completeness statistics for optional metadata fields across chunks.
- */
-export interface MetadataCompleteness {
-  /** Number of chunks with category field */
-  hasCategory: number;
-  /** Number of chunks with title field */
-  hasTitle: number;
-  /** Number of chunks with lastUpdated field */
-  hasLastUpdated: number;
 }
 
 /**
