@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
     "@compliance-iq/shared-types": "workspace:*",
     "@pinecone-database/pinecone": "^6.1.4",
     "convex": "^1.17.5",
