@@ -79,7 +79,7 @@ export async function getIndexedJurisdictions(
   });
 
   // Extract jurisdiction from each match
-  const jurisdictions = results.matches.map((match) => match.metadata?.jurisdiction);
+  const jurisdictions = results.matches.map((match) => match.metadata?.['jurisdiction']);
 
   // Dedupe using Set and filter out any undefined/null values
   const filtered = jurisdictions.filter(Boolean);

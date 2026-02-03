@@ -8,3 +8,6 @@
  */
 
 export * from './types';
+export * from './token-analyzer';
+export * from './metadata-validator';
+export * from './coverage-checker';
