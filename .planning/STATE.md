@@ -20,13 +20,13 @@
 ## Current Position
 
 **Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
-**Plan:** 3 of 6 in phase
+**Plan:** 4 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-03 - Completed 07-03-PLAN.md (Confidence scoring & prompt templates)
+**Last activity:** 2026-02-03 - Completed 07-04-PLAN.md (Claude answer generation & response parsing)
 
 **Progress:**
 ```
-[██████████████████████████████████░] 67% (40/60 plans complete)
+[███████████████████████████████████] 68% (41/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,7 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
-Phase 7: Query Pipeline ███░░░░░ IN PROGRESS (3/6)
+Phase 7: Query Pipeline ████░░░░ IN PROGRESS (4/6)
 ```
 
 ---
@@ -43,8 +43,8 @@ Phase 7: Query Pipeline ███░░░░░ IN PROGRESS (3/6)
 
 ### Velocity
 - Phases completed: 6/10
-- Plans completed: 40/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 3/6)
-- Requirements delivered: 14/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-03)
+- Plans completed: 41/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 4/6)
+- Requirements delivered: 15/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-03, QUERY-04, QUERY-06, QUERY-07)
 - Days since start: 3
 
 ### Quality
@@ -156,6 +156,11 @@ Phase 7: Query Pipeline ███░░░░░ IN PROGRESS (3/6)
 | Type casting for Pinecone index | 2026-02-03 | Use 'as any' for Index<RecordMetadata> to Index<ChunkMetadata> compatibility | Active |
 | Three-tier chunking fallback | 2026-02-03 | Whole section → subsection split → paragraph split preserves legal structure | Active |
 | 945-line pipeline documentation | 2026-02-03 | Comprehensive reference covering all pipeline stages and source types | Active |
+| Non-streaming Claude generation first | 2026-02-03 | Focus on correctness before UX optimization (streaming in Phase 9) | Active |
+| Temperature 0 for Claude compliance answers | 2026-02-03 | Legal context requires factual precision over creativity | Active |
+| Citation validation warns, doesn't fail | 2026-02-03 | Invalid [N] refs surface in warnings rather than breaking pipeline | Active |
+| Regex-based permit extraction | 2026-02-03 | Deterministic parsing of structured Claude output vs additional LLM call | Active |
+| Header-based jurisdiction section parsing | 2026-02-03 | Split by ### Federal/State/County/Municipal delimiters for predictable structure | Active |
 | Flat RetrievedChunk interface | 2026-02-03 | Simpler access patterns for answer generation vs nested metadata | Active |
 | Federal-only geocoding fallback | 2026-02-03 | Invalid address never breaks query pipeline, federal regulations always apply | Active |
 | City normalization with hyphens | 2026-02-03 | Lowercase + hyphens for consistent jurisdiction IDs (e.g., TX-fort-worth) | Active |
@@ -258,28 +263,38 @@ Phase 7: Query Pipeline ███░░░░░ IN PROGRESS (3/6)
   - --output=filename for file writing
   - Added dotenv@17.2.3 for .env file loading
 
+- **Claude Generation (07-04):** Claude API integration for answer generation
+  - generateAnswer for non-streaming answer generation using claude-sonnet-4-5
+  - GenerationError with typed error codes (API_ERROR, RATE_LIMIT, CONTENT_FILTER, TIMEOUT)
+  - Temperature 0 for factual accuracy in legal compliance context
+  - 2 exports totaling 80 lines
+
+- **Response Parser (07-04):** Answer parsing for citations and permits
+  - extractCitations maps [N] references to source chunks (1-based to 0-based indexing)
+  - validateCitations identifies invalid citation references without failing
+  - extractPermits parses structured permit data from Required Permits section
+  - parseJurisdictionSections splits answer by Federal/State/County/Municipal headers
+  - parseAnswer orchestrates all parsers with warnings array
+  - 5 functions totaling 254 lines
+
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 5: Municipal Data (all 6 plans executed)
-- Created 10-file municipal module (3,222 lines total)
-- 20 Texas cities registered (17 Municode, 3 American Legal)
-- Firecrawl-based scraping with markdown caching
-- End-to-end pipeline: scrape -> store -> chunk -> embed -> index
-- Pinecone vectors with TX-{cityId} jurisdiction (e.g., TX-houston)
-- sourceType: 'municipal' for Pinecone filtering
-- HTTP endpoints: /pipeline/municipal, /pipeline/municipal/:city, /pipeline/municipal/status
-- Convex city tracking: listTexasCities, updateCityStatus, getCityByCityId, getTexasCityCoverage
-- Coverage report generator with JSON and markdown formats
-- Phase verified: 5/5 must-haves passed
+- Completed 07-04-PLAN.md (Claude answer generation & response parsing)
+- Added Claude API integration using @anthropic-ai/sdk ^0.72.1
+- Created generateAnswer function for non-streaming answer generation with claude-sonnet-4-5
+- Created response parser with citation extraction, permit parsing, and jurisdiction section splitting
+- Temperature 0 for factual accuracy in legal compliance context
+- Citation validation warns on invalid [N] references without breaking pipeline
+- Regex-based permit extraction from structured Claude output
+- Header-based jurisdiction section parsing (### Federal/State/County/Municipal)
 
 ### What's Next
-1. Phase 6: Data Processing - Validate end-to-end pipelines across all data sources
-2. Before production:
-   - Fix TypeScript errors in texas/fetch-statutes.ts and texas/parse-statutes.ts
-   - Configure Firecrawl API key in Workers secrets
-   - Configure Pinecone API key and Convex URL in Workers secrets
-   - Run live API integration tests (Firecrawl, OpenAI, Pinecone)
+1. Phase 7 Plan 5: Confidence scoring (calculate confidence based on retrieval metrics)
+2. Phase 7 Plan 6: Query pipeline orchestration (combine all components into unified action)
+3. Before production:
+   - Configure Anthropic API key in Convex environment
+   - Fix pre-existing TypeScript errors in jurisdictions.ts, sources.ts, lib/geocode.ts
 
 ---
 
