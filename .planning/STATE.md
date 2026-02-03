@@ -20,13 +20,13 @@
 ## Current Position
 
 **Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
-**Plan:** 4 of 6 in phase
+**Plan:** 5 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-03 - Completed 07-04-PLAN.md (Claude answer generation & response parsing)
+**Last activity:** 2026-02-03 - Completed 07-05-PLAN.md (Query orchestration & persistence)
 
 **Progress:**
 ```
-[███████████████████████████████████] 68% (41/60 plans complete)
+[███████████████████████████████████] 70% (42/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,7 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
-Phase 7: Query Pipeline ████░░░░ IN PROGRESS (4/6)
+Phase 7: Query Pipeline █████░░░ IN PROGRESS (5/6)
 ```
 
 ---
@@ -43,8 +43,8 @@ Phase 7: Query Pipeline ████░░░░ IN PROGRESS (4/6)
 
 ### Velocity
 - Phases completed: 6/10
-- Plans completed: 41/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 4/6)
-- Requirements delivered: 15/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-03, QUERY-04, QUERY-06, QUERY-07)
+- Plans completed: 42/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 5/6)
+- Requirements delivered: 16/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-01, QUERY-03, QUERY-04, QUERY-06, QUERY-07)
 - Days since start: 3
 
 ### Quality
@@ -170,6 +170,10 @@ Phase 7: Query Pipeline ████░░░░ IN PROGRESS (4/6)
 | Jurisdiction-layered prompts | 2026-02-03 | Separate sections for Federal/State/County/Municipal per CONTEXT.md | Active |
 | Numbered citation format [N] | 2026-02-03 | Chunks numbered [1], [2], [3] in prompt for precise citation tracking | Active |
 | Dedicated permits section | 2026-02-03 | Separate "Required Permits" section at end (not inline) for actionable list | Active |
+| Internal mutation for persistence | 2026-02-03 | saveQueryResult as internalMutation, only callable by actions | Active |
+| Graceful geocoding fallback | 2026-02-03 | Fall back to federal-only on missing API key or geocoding error | Active |
+| Citation format adaptation | 2026-02-03 | Map rich Citation type to schema's message citations with placeholder sourceId | Active |
+| System user placeholder | 2026-02-03 | Hard-code userId as 'system' until Phase 8 auth implementation | Active |
 
 ### Recent Changes
 
@@ -666,25 +670,23 @@ Phase 7: Query Pipeline ████░░░░ IN PROGRESS (4/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 7 Plan 3: Confidence Scoring & Prompt Templates
-- Created retrieval-based confidence scoring (50% similarity, 30% jurisdiction coverage, 20% citation coverage)
-- High confidence requires score > 0.8 AND full jurisdiction coverage (prevents false confidence)
-- Built Claude prompt templates with jurisdiction sections (Federal/State/County/Municipal)
-- Numbered citation format [1], [2], [3] in prompts enables precise citation tracking
-- Dedicated "Required Permits" section for actionable permit list per CONTEXT.md
-- 2 files created: apps/convex/convex/lib/confidence.ts, apps/convex/convex/lib/prompt.ts
-- 2 atomic commits: ef2ca31 (confidence), 1f91bca (prompts)
-- Duration: 1.6 minutes
+- Completed Phase 7 Plan 5: Query Orchestration & Persistence
+- Created processQuery action orchestrating full RAG pipeline (geocode → embed → retrieve → confidence → prompt → generate → parse → persist)
+- Built saveQueryResult internal mutation for persisting to conversations and messages
+- Implemented graceful geocoding fallback to federal-only jurisdictions on error
+- Adapted rich Citation types to schema-constrained message citations
+- 2 files created: apps/convex/convex/actions/query.ts, apps/convex/convex/mutations/saveQuery.ts
+- 2 atomic commits: 48ac565 (mutation), d30c87d (action)
+- Duration: 5 minutes
 
 ### What's Next
-1. Phase 7 Plan 4: Claude answer generation with citations
-2. Phase 7 Plan 5: Query orchestration action (geocode → embed → retrieve → generate → score)
-3. Phase 7 Plan 6: Test script for end-to-end pipeline validation
-4. Before production:
-   - Configure OPENAI_API_KEY in Convex environment
-   - Configure ANTHROPIC_API_KEY for answer generation
-   - Configure PINECONE_API_KEY for vector search
-   - Test end-to-end query pipeline with real addresses and questions
+1. Phase 7 Plan 6: Frontend integration (call processQuery from React UI)
+2. Phase 8: User authentication (replace 'system' userId with real auth)
+3. Phase 9: Streaming (QUERY-05 - enhance processQuery with streaming support)
+4. Before testing:
+   - Run `npx convex dev` to regenerate API types for internal.mutations reference
+   - Configure API keys in Convex environment (OPENAI_API_KEY, PINECONE_API_KEY, ANTHROPIC_API_KEY, optional GEOCODIO_API_KEY)
+   - Test end-to-end query pipeline with real questions
 
 ---
 
