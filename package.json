@@ -9,12 +9,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "setup:pinecone": "npx tsx scripts/setup-pinecone.ts"
+    "setup:pinecone": "npx tsx scripts/setup-pinecone.ts",
+    "test:query": "npx tsx scripts/test-query.ts"
   },
   "devDependencies": {
     "@compliance-iq/eslint-config": "workspace:*",
     "@pinecone-database/pinecone": "^6.1.4",
     "@types/node": "^22.10.5",
+    "convex": "^1.17.5",
     "dotenv": "^17.2.3",
     "eslint": "^9.18.0",
     "openai": "^6.17.0",
