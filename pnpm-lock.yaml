@@ -47,6 +47,9 @@ importers:
       convex:
         specifier: ^1.17.5
         version: 1.31.7(react@18.3.1)
+      openai:
+        specifier: ^6.17.0
+        version: 6.17.0(ws@8.18.0)(zod@4.3.6)
     devDependencies:
       '@compliance-iq/tsconfig':
         specifier: workspace:*

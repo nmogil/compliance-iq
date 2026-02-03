@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@compliance-iq/shared-types": "workspace:*",
-    "convex": "^1.17.5"
+    "convex": "^1.17.5",
+    "openai": "^6.17.0"
   },
   "devDependencies": {
     "@compliance-iq/tsconfig": "workspace:*",
