@@ -268,12 +268,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 07-01-PLAN.md -- Query types and geocoding service (Geocodio)
-- [ ] 07-02-PLAN.md -- Embedding and Pinecone retrieval with reranking
-- [ ] 07-03-PLAN.md -- Confidence scoring and Claude prompt templates
-- [ ] 07-04-PLAN.md -- Claude answer generation and response parsing
-- [ ] 07-05-PLAN.md -- Query orchestration action with persistence
-- [ ] 07-06-PLAN.md -- Query retrieval functions and test script
+- [x] 07-01-PLAN.md -- Query types and geocoding service (Geocodio)
+- [x] 07-02-PLAN.md -- Embedding and Pinecone retrieval with reranking
+- [x] 07-03-PLAN.md -- Confidence scoring and Claude prompt templates
+- [x] 07-04-PLAN.md -- Claude answer generation and response parsing
+- [x] 07-05-PLAN.md -- Query orchestration action with persistence
+- [x] 07-06-PLAN.md -- Query retrieval functions and test script
 
 **Requirements Covered:**
 - QUERY-01: User can ask natural language compliance questions
@@ -392,7 +392,7 @@ Plans:
 | 4 - County Data | Complete | 2026-02-02 | 2026-02-02 | 2 |
 | 5 - Municipal Data | Complete | 2026-02-02 | 2026-02-02 | 3 |
 | 6 - Data Processing | Complete | 2026-02-02 | 2026-02-02 | 4 (validation) |
-| 7 - Query Pipeline | Pending | TBD | TBD | 6 |
+| 7 - Query Pipeline | Complete | 2026-02-03 | 2026-02-03 | 6 |
 | 8 - Application | Pending | TBD | TBD | 5 |
 | 9 - Integration | Pending | TBD | TBD | 2 |
 | 10 - Pilot Preparation | Pending | TBD | TBD | -- |
@@ -412,4 +412,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-02-02 - Phase 6 complete*
+*Last updated: 2026-02-03 - Phase 7 complete*

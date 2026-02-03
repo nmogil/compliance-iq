@@ -22,13 +22,13 @@ Requirements for Texas pilot. Each maps to roadmap phases.
 
 ### Query Interface
 
-- [ ] **QUERY-01**: User can ask natural language compliance questions
-- [ ] **QUERY-02**: System resolves address to applicable jurisdictions (federal, state, county, municipal)
-- [ ] **QUERY-03**: RAG pipeline retrieves relevant regulatory chunks from Pinecone
-- [ ] **QUERY-04**: Claude generates response with inline citations to source law
+- [x] **QUERY-01**: User can ask natural language compliance questions
+- [x] **QUERY-02**: System resolves address to applicable jurisdictions (federal, state, county, municipal)
+- [x] **QUERY-03**: RAG pipeline retrieves relevant regulatory chunks from Pinecone
+- [x] **QUERY-04**: Claude generates response with inline citations to source law
 - [ ] **QUERY-05**: Response streams in real-time as Claude generates
-- [ ] **QUERY-06**: Citations link to original source text (URLs or document references)
-- [ ] **QUERY-07**: Response identifies required permits/licenses with issuing agency
+- [x] **QUERY-06**: Citations link to original source text (URLs or document references)
+- [x] **QUERY-07**: Response identifies required permits/licenses with issuing agency
 
 ### Application
 
@@ -102,13 +102,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-08 | Phase 2, validated in Phase 6 | Complete |
 | DATA-09 | Phase 2, validated in Phase 6 | Complete |
 | DATA-10 | Phase 2, validated in Phase 6 | Complete |
-| QUERY-01 | Phase 7 | Pending |
-| QUERY-02 | Phase 7 | Pending |
-| QUERY-03 | Phase 7 | Pending |
-| QUERY-04 | Phase 7 | Pending |
+| QUERY-01 | Phase 7 | Complete |
+| QUERY-02 | Phase 7 | Complete |
+| QUERY-03 | Phase 7 | Complete |
+| QUERY-04 | Phase 7 | Complete |
 | QUERY-05 | Phase 9 | Pending |
-| QUERY-06 | Phase 7 | Pending |
-| QUERY-07 | Phase 7 | Pending |
+| QUERY-06 | Phase 7 | Complete |
+| QUERY-07 | Phase 7 | Complete |
 | APP-01 | Phase 8 | Pending |
 | APP-02 | Phase 8 | Pending |
 | APP-03 | Phase 8 | Pending |
@@ -132,4 +132,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-02-02 - Phase 6 complete (validates DATA-07, DATA-08, DATA-09, DATA-10)*
+*Last updated: 2026-02-03 - Phase 7 complete (QUERY-01, QUERY-02, QUERY-03, QUERY-04, QUERY-06, QUERY-07)*
