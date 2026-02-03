@@ -8,5 +8,3 @@
  */
 
 export * from './types';
-export * from './token-analyzer';
-export * from './metadata-validator';
