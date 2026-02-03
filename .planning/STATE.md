@@ -623,6 +623,17 @@ Phase 6: Data Processing ████████ COMPLETE (7/7)
   - --output=filename for file writing
   - Added dotenv@17.2.3 for .env file loading
 
+- **Pipeline Documentation (06-07):** Comprehensive reference
+  - docs/DATA-PROCESSING.md (945 lines)
+  - 14 major sections covering all pipeline stages
+  - Chunking strategies for all 4 source types
+  - ChunkMetadata schema with 12 fields
+  - R2 storage structure documentation
+  - Embedding pipeline configuration
+  - Pinecone index setup
+  - Quality metrics and targets
+  - Performance benchmarks
+
 ## Session Continuity
 
 ### What Just Happened
@@ -630,12 +641,10 @@ Phase 6: Data Processing ████████ COMPLETE (7/7)
 - Wave 1 (plans 01-03): Types, token analyzer, metadata validator
 - Wave 2 (plans 04-05): Coverage checker, quality reporter
 - Wave 3 (plans 06-07): HTTP endpoints, pipeline documentation
-- Wave 3 (plan 06): HTTP endpoints and CLI script
-- Final deliverable: 4 HTTP validation endpoints + CLI validation script
-- Added GET /validation/coverage, /validation/quality, /validation/report, /validation/summary endpoints
-- Created scripts/validate-pipeline.ts with --format, --coverage-only, --output flags
-- Added dotenv@17.2.3 for .env file loading
-- Phase verified: All must-haves met, validation suite ready for production
+- Final deliverables: 4 HTTP validation endpoints + CLI script + 945-line documentation
+- Created docs/DATA-PROCESSING.md with comprehensive pipeline reference
+- Documented chunking strategies, metadata schema, R2 structure, embeddings, quality metrics
+- Phase verified: All must-haves met, validation suite + docs ready for production
 
 ### What's Next
 1. Phase 7: Query Processing - RAG query pipeline with embedding generation and semantic search
