@@ -20,13 +20,13 @@
 ## Current Position
 
 **Phase:** 7 of 10 (Query Pipeline) - IN PROGRESS
-**Plan:** 2 of 6 in phase
+**Plan:** 3 of 6 in phase
 **Status:** In progress
-**Last activity:** 2026-02-03 - Completed 07-02-PLAN.md (Query embedding & retrieval)
+**Last activity:** 2026-02-03 - Completed 07-03-PLAN.md (Confidence scoring & prompt templates)
 
 **Progress:**
 ```
-[██████████████████████████████████] 65% (39/60 plans complete)
+[██████████████████████████████████░] 67% (40/60 plans complete)
 
 Phase 1: Foundation ████████ COMPLETE (6/6)
 Phase 2: Federal Data ████████ COMPLETE (6/6)
@@ -34,7 +34,7 @@ Phase 3: State Data ████████ COMPLETE (6/6)
 Phase 4: County Data ████████ COMPLETE (6/6)
 Phase 5: Municipal Data ████████ COMPLETE (6/6)
 Phase 6: Data Processing ████████ COMPLETE (7/7)
-Phase 7: Query Pipeline ██░░░░░░ IN PROGRESS (2/6)
+Phase 7: Query Pipeline ███░░░░░ IN PROGRESS (3/6)
 ```
 
 ---
@@ -43,7 +43,7 @@ Phase 7: Query Pipeline ██░░░░░░ IN PROGRESS (2/6)
 
 ### Velocity
 - Phases completed: 6/10
-- Plans completed: 39/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 2/6)
+- Plans completed: 40/60 (Phase 1: 6/6, Phase 2: 6/6, Phase 3: 6/6, Phase 4: 6/6, Phase 5: 6/6, Phase 6: 7/7, Phase 7: 3/6)
 - Requirements delivered: 14/28 (DATA-01 through DATA-10, COV-01 through COV-05, QUERY-03)
 - Days since start: 3
 
@@ -159,6 +159,12 @@ Phase 7: Query Pipeline ██░░░░░░ IN PROGRESS (2/6)
 | Flat RetrievedChunk interface | 2026-02-03 | Simpler access patterns for answer generation vs nested metadata | Active |
 | Federal-only geocoding fallback | 2026-02-03 | Invalid address never breaks query pipeline, federal regulations always apply | Active |
 | City normalization with hyphens | 2026-02-03 | Lowercase + hyphens for consistent jurisdiction IDs (e.g., TX-fort-worth) | Active |
+| Weighted confidence scoring | 2026-02-03 | 50% similarity, 30% jurisdiction coverage, 20% citation coverage for balanced retrieval assessment | Active |
+| High confidence requires full coverage | 2026-02-03 | Score > 0.8 AND 100% jurisdiction coverage prevents false confidence | Active |
+| Retrieval-based confidence only | 2026-02-03 | No LLM self-assessment - research shows LLMs overestimate confidence | Active |
+| Jurisdiction-layered prompts | 2026-02-03 | Separate sections for Federal/State/County/Municipal per CONTEXT.md | Active |
+| Numbered citation format [N] | 2026-02-03 | Chunks numbered [1], [2], [3] in prompt for precise citation tracking | Active |
+| Dedicated permits section | 2026-02-03 | Separate "Required Permits" section at end (not inline) for actionable list | Active |
 
 ### Recent Changes
 
@@ -645,19 +651,20 @@ Phase 7: Query Pipeline ██░░░░░░ IN PROGRESS (2/6)
 ## Session Continuity
 
 ### What Just Happened
-- Completed Phase 7 Plan 2: Query Embedding & Retrieval
-- Created query embedding module using OpenAI text-embedding-3-large (3072-dimension vectors)
-- Implemented Pinecone retrieval with $or jurisdiction filtering for multi-jurisdiction queries
-- Built weighted reranking algorithm (80% similarity + 20% recency bonus)
-- Added openai and @pinecone-database/pinecone dependencies to Convex app
-- 2 files created: apps/convex/convex/lib/embed.ts, apps/convex/convex/lib/retrieve.ts
-- 2 atomic commits: bace8e3 (embedding), f23561d (retrieval)
-- Duration: 3.6 minutes
+- Completed Phase 7 Plan 3: Confidence Scoring & Prompt Templates
+- Created retrieval-based confidence scoring (50% similarity, 30% jurisdiction coverage, 20% citation coverage)
+- High confidence requires score > 0.8 AND full jurisdiction coverage (prevents false confidence)
+- Built Claude prompt templates with jurisdiction sections (Federal/State/County/Municipal)
+- Numbered citation format [1], [2], [3] in prompts enables precise citation tracking
+- Dedicated "Required Permits" section for actionable permit list per CONTEXT.md
+- 2 files created: apps/convex/convex/lib/confidence.ts, apps/convex/convex/lib/prompt.ts
+- 2 atomic commits: ef2ca31 (confidence), 1f91bca (prompts)
+- Duration: 1.6 minutes
 
 ### What's Next
-1. Phase 7 Plan 3: Claude answer generation with citations
-2. Phase 7 Plan 4: Confidence scoring based on retrieval metrics
-3. Phase 7 Plan 5: Query orchestration action (geocode → embed → retrieve → generate)
+1. Phase 7 Plan 4: Claude answer generation with citations
+2. Phase 7 Plan 5: Query orchestration action (geocode → embed → retrieve → generate → score)
+3. Phase 7 Plan 6: Test script for end-to-end pipeline validation
 4. Before production:
    - Configure OPENAI_API_KEY in Convex environment
    - Configure ANTHROPIC_API_KEY for answer generation
