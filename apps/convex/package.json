@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "convex dev",
     "deploy": "convex deploy",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:query": "npx tsx scripts/test-query.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.1",

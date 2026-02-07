@@ -10,7 +10,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "setup:pinecone": "npx tsx scripts/setup-pinecone.ts",
-    "test:query": "npx tsx scripts/test-query.ts"
+    "test:query": "pnpm --filter @compliance-iq/convex test:query"
   },
   "devDependencies": {
     "@compliance-iq/eslint-config": "workspace:*",

@@ -1,4 +1,8 @@
-import { Pinecone, type Index, type RecordMetadata } from '@pinecone-database/pinecone';
+import {
+  Pinecone,
+  type Index,
+  type RecordMetadata,
+} from '@pinecone-database/pinecone';
 
 const INDEX_NAME = 'compliance-embeddings';
 
@@ -102,16 +106,14 @@ export async function queryChunks(
     filter?: Record<string, unknown>;
     includeMetadata?: boolean;
   } = {}
-): Promise<Array<{
-  id: string;
-  score: number;
-  metadata?: ChunkMetadata;
-}>> {
-  const {
-    topK = 10,
-    filter = {},
-    includeMetadata = true,
-  } = options;
+): Promise<
+  Array<{
+    id: string;
+    score: number;
+    metadata?: ChunkMetadata;
+  }>
+> {
+  const { topK = 10, filter = {}, includeMetadata = true } = options;
 
   const results = await index.query({
     vector: queryVector,
@@ -120,7 +122,7 @@ export async function queryChunks(
     includeMetadata,
   });
 
-  return results.matches.map(match => ({
+  return results.matches.map((match) => ({
     id: match.id,
     score: match.score ?? 0,
     metadata: match.metadata as ChunkMetadata | undefined,

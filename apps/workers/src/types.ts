@@ -1,3 +1,16 @@
+import type {
+  Workflow,
+  FederalBatchParams,
+  FederalTitleParams,
+  TexasBatchParams,
+  TexasCodeParams,
+  TexasTACParams,
+  CountyBatchParams,
+  CountyProcessorParams,
+  MunicipalBatchParams,
+  CityProcessorParams,
+} from './workflows/types';
+
 /**
  * Cloudflare Workers environment bindings
  */
@@ -18,4 +31,25 @@ export interface Env {
 
   // Convex URL for syncing freshness data
   CONVEX_URL: string;
+
+  // Feature flag for workflows (set to 'false' to use legacy synchronous processing)
+  FEATURE_WORKFLOWS?: string;
+
+  // Workflow bindings for durable execution
+  // Federal CFR pipeline
+  FEDERAL_BATCH_WORKFLOW: Workflow<FederalBatchParams>;
+  FEDERAL_TITLE_WORKFLOW: Workflow<FederalTitleParams>;
+
+  // Texas state pipeline
+  TEXAS_BATCH_WORKFLOW: Workflow<TexasBatchParams>;
+  TEXAS_CODE_WORKFLOW: Workflow<TexasCodeParams>;
+  TEXAS_TAC_WORKFLOW: Workflow<TexasTACParams>;
+
+  // County pipeline
+  COUNTY_BATCH_WORKFLOW: Workflow<CountyBatchParams>;
+  COUNTY_PROCESSOR_WORKFLOW: Workflow<CountyProcessorParams>;
+
+  // Municipal pipeline
+  MUNICIPAL_BATCH_WORKFLOW: Workflow<MunicipalBatchParams>;
+  CITY_PROCESSOR_WORKFLOW: Workflow<CityProcessorParams>;
 }

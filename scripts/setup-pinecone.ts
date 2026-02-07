@@ -22,7 +22,9 @@ async function main() {
 
   console.log(`Checking if index "${INDEX_NAME}" exists...`);
   const existingIndexes = await pc.listIndexes();
-  const indexExists = existingIndexes.indexes?.some(idx => idx.name === INDEX_NAME);
+  const indexExists = existingIndexes.indexes?.some(
+    (idx) => idx.name === INDEX_NAME
+  );
 
   if (indexExists) {
     console.log(`✓ Index "${INDEX_NAME}" already exists`);
@@ -31,8 +33,12 @@ async function main() {
     console.log(`  Name: ${indexDescription.name}`);
     console.log(`  Dimension: ${indexDescription.dimension}`);
     console.log(`  Metric: ${indexDescription.metric}`);
-    console.log(`  Status: ${indexDescription.status?.ready ? 'Ready' : 'Not ready'}`);
-    console.log(`  Spec: ${indexDescription.spec?.serverless ? 'serverless' : 'pod-based'}`);
+    console.log(
+      `  Status: ${indexDescription.status?.ready ? 'Ready' : 'Not ready'}`
+    );
+    console.log(
+      `  Spec: ${indexDescription.spec?.serverless ? 'serverless' : 'pod-based'}`
+    );
     if (indexDescription.spec?.serverless) {
       console.log(`  Cloud: ${indexDescription.spec.serverless.cloud}`);
       console.log(`  Region: ${indexDescription.spec.serverless.region}`);
@@ -57,7 +63,7 @@ async function main() {
       const description = await pc.describeIndex(INDEX_NAME);
       ready = description.status?.ready ?? false;
       if (!ready) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         process.stdout.write('.');
       }
     }
@@ -69,8 +75,12 @@ async function main() {
     console.log(`  Name: ${indexDescription.name}`);
     console.log(`  Dimension: ${indexDescription.dimension}`);
     console.log(`  Metric: ${indexDescription.metric}`);
-    console.log(`  Status: ${indexDescription.status?.ready ? 'Ready' : 'Not ready'}`);
-    console.log(`  Spec: ${indexDescription.spec?.serverless ? 'serverless' : 'pod-based'}`);
+    console.log(
+      `  Status: ${indexDescription.status?.ready ? 'Ready' : 'Not ready'}`
+    );
+    console.log(
+      `  Spec: ${indexDescription.spec?.serverless ? 'serverless' : 'pod-based'}`
+    );
     if (indexDescription.spec?.serverless) {
       console.log(`  Cloud: ${indexDescription.spec.serverless.cloud}`);
       console.log(`  Region: ${indexDescription.spec.serverless.region}`);

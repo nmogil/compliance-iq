@@ -131,9 +131,8 @@ export async function processCFRTitle(
       try {
         console.log(`[Pipeline] Processing part ${parsedPart.number} (${parsedPart.sections.length} sections)`);
 
-        // Store raw XML in R2
-        const partXml = await fetchCFRTitle(titleNumber); // In production, we'd fetch per-part
-        await storeCFRPart(env.DOCUMENTS_BUCKET, titleNumber, parsedPart.number, partXml);
+        // Store parsed part data in R2 (not re-fetching XML)
+        await storeCFRPart(env.DOCUMENTS_BUCKET, titleNumber, parsedPart.number, JSON.stringify(parsedPart));
 
         // Convert parsed sections to expected format (heading -> title)
         const sections: CFRSection[] = parsedPart.sections.map(s => ({

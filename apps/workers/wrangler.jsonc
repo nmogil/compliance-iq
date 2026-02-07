@@ -1,6 +1,6 @@
 {
   "name": "compliance-iq-workers",
-  "main": "src/index.ts",
+    "main": "src/index.ts",
   "compatibility_date": "2025-01-31",
   "node_compat": true,
 
@@ -9,6 +9,59 @@
     {
       "binding": "DOCUMENTS_BUCKET",
       "bucket_name": "compliance-documents"
+    }
+  ],
+
+  // Workflow bindings for durable execution
+  "workflows": [
+    // Federal CFR pipeline workflows
+    {
+      "name": "federal-batch-workflow",
+      "binding": "FEDERAL_BATCH_WORKFLOW",
+      "class_name": "FederalBatchWorkflow"
+    },
+    {
+      "name": "federal-title-workflow",
+      "binding": "FEDERAL_TITLE_WORKFLOW",
+      "class_name": "FederalTitleWorkflow"
+    },
+    // Texas state pipeline workflows
+    {
+      "name": "texas-batch-workflow",
+      "binding": "TEXAS_BATCH_WORKFLOW",
+      "class_name": "TexasBatchWorkflow"
+    },
+    {
+      "name": "texas-code-workflow",
+      "binding": "TEXAS_CODE_WORKFLOW",
+      "class_name": "TexasCodeWorkflow"
+    },
+    {
+      "name": "texas-tac-workflow",
+      "binding": "TEXAS_TAC_WORKFLOW",
+      "class_name": "TexasTACWorkflow"
+    },
+    // County pipeline workflows
+    {
+      "name": "county-batch-workflow",
+      "binding": "COUNTY_BATCH_WORKFLOW",
+      "class_name": "CountyBatchWorkflow"
+    },
+    {
+      "name": "county-processor-workflow",
+      "binding": "COUNTY_PROCESSOR_WORKFLOW",
+      "class_name": "CountyProcessorWorkflow"
+    },
+    // Municipal pipeline workflows
+    {
+      "name": "municipal-batch-workflow",
+      "binding": "MUNICIPAL_BATCH_WORKFLOW",
+      "class_name": "MunicipalBatchWorkflow"
+    },
+    {
+      "name": "city-processor-workflow",
+      "binding": "CITY_PROCESSOR_WORKFLOW",
+      "class_name": "CityProcessorWorkflow"
     }
   ],
 

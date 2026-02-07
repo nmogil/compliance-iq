@@ -1,3 +1,5 @@
+"use node";
+
 import Anthropic from '@anthropic-ai/sdk';
 
 /**

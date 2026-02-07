@@ -1,3 +1,5 @@
+"use node";
+
 /**
  * Pinecone Retrieval Module
  *

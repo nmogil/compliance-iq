@@ -32,7 +32,10 @@ function App() {
           ) : (
             <ul className="divide-y divide-slate-200">
               {jurisdictions.map((j) => (
-                <li key={j._id} className="py-3 flex items-center justify-between">
+                <li
+                  key={j._id}
+                  className="py-3 flex items-center justify-between"
+                >
                   <div>
                     <p className="font-medium text-slate-900">{j.name}</p>
                     <p className="text-sm text-slate-500">{j.type}</p>
@@ -53,7 +56,9 @@ function App() {
         </div>
 
         <div className="mt-8 rounded-lg bg-blue-50 border border-blue-200 p-4">
-          <h3 className="text-sm font-medium text-blue-800">Connection Status</h3>
+          <h3 className="text-sm font-medium text-blue-800">
+            Connection Status
+          </h3>
           <p className="mt-1 text-sm text-blue-700">
             {jurisdictions !== undefined
               ? 'Connected to Convex backend'

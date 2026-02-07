@@ -1,5 +1,5 @@
 import type { Env } from './types';
-import { processCFRTitle, processAllFederalTitles } from './federal';
+import { processCFRTitle, processAllFederalTitles, TARGET_TITLES } from './federal';
 import {
   processTexasStatutes,
   processTexasTAC,
@@ -31,6 +31,25 @@ import {
   generateFullValidationReport,
   formatValidationResultMarkdown,
 } from './validation';
+import type { WorkflowTriggerResponse, WorkflowStatusResponse } from './workflows/types';
+
+// Re-export workflow classes for Cloudflare binding
+export { FederalBatchWorkflow } from './workflows/federal/batch.workflow';
+export { FederalTitleWorkflow } from './workflows/federal/title.workflow';
+export { TexasBatchWorkflow } from './workflows/texas/batch.workflow';
+export { TexasCodeWorkflow } from './workflows/texas/code.workflow';
+export { TexasTACWorkflow } from './workflows/texas/tac.workflow';
+export { CountyBatchWorkflow } from './workflows/counties/batch.workflow';
+export { CountyProcessorWorkflow } from './workflows/counties/county.workflow';
+export { MunicipalBatchWorkflow } from './workflows/municipal/batch.workflow';
+export { CityProcessorWorkflow } from './workflows/municipal/city.workflow';
+
+/**
+ * Check if workflows feature is enabled
+ */
+function useWorkflows(env: Env): boolean {
+  return env.FEATURE_WORKFLOWS !== 'false';
+}
 
 /**
  * Cloudflare Worker for ComplianceIQ data pipeline
@@ -46,14 +65,17 @@ export default {
 
     // Health check endpoint
     if (url.pathname === '/health') {
+      const workflowsEnabled = useWorkflows(env);
       return new Response(
         JSON.stringify({
           status: 'healthy',
           timestamp: new Date().toISOString(),
           worker: 'compliance-iq-workers',
+          workflowsEnabled,
           endpoints: [
             'GET /health - Health check',
             'GET /documents - List R2 documents',
+            // Pipeline endpoints (now async when workflows enabled)
             'POST /pipeline/federal - Trigger full federal pipeline (7 titles)',
             'POST /pipeline/federal/:title - Trigger single CFR title pipeline',
             'POST /pipeline/texas - Trigger full Texas pipeline (statutes + TAC)',
@@ -69,6 +91,12 @@ export default {
             'POST /pipeline/municipal/:city - Trigger single city pipeline',
             'GET /pipeline/municipal/status - Get municipal pipeline status',
             'POST /pipeline/municipal/reset - Reset municipal pipeline checkpoint',
+            // Workflow management endpoints (new)
+            'GET /workflows/:id/status - Get workflow status and progress',
+            'POST /workflows/:id/pause - Pause running workflow',
+            'POST /workflows/:id/resume - Resume paused workflow',
+            'POST /workflows/:id/cancel - Terminate workflow',
+            // Validation endpoints
             'GET /validation/coverage - Get coverage report for all jurisdictions',
             'GET /validation/quality - Get data quality validation report (JSON)',
             'GET /validation/report - Get data quality validation report (Markdown)',
@@ -117,6 +145,28 @@ export default {
     if (url.pathname === '/pipeline/federal' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting full federal pipeline');
+
+        // Use workflows if enabled
+        if (useWorkflows(env)) {
+          const instance = await env.FEDERAL_BATCH_WORKFLOW.create({
+            params: {},
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'federal-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        // Legacy synchronous processing
         const result = await processAllFederalTitles(env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -142,6 +192,37 @@ export default {
       const titleNumber = parseInt(titleMatch[1], 10);
       try {
         console.log(`[Worker] Starting pipeline for title ${titleNumber}`);
+
+        // Use workflows if enabled
+        if (useWorkflows(env)) {
+          // Validate title number
+          const titleConfig = TARGET_TITLES.find((t) => t.number === titleNumber);
+          if (!titleConfig) {
+            return new Response(
+              JSON.stringify({ error: `Unknown CFR title: ${titleNumber}` }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const instance = await env.FEDERAL_TITLE_WORKFLOW.create({
+            params: { titleNumber },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'federal-title',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        // Legacy synchronous processing
         const result = await processCFRTitle(titleNumber, env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -165,6 +246,26 @@ export default {
     if (url.pathname === '/pipeline/texas' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting full Texas pipeline');
+
+        if (useWorkflows(env)) {
+          const instance = await env.TEXAS_BATCH_WORKFLOW.create({
+            params: {},
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'texas-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processAllTexasSources(env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -188,6 +289,26 @@ export default {
     if (url.pathname === '/pipeline/texas/statutes' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting Texas Statutes pipeline');
+
+        if (useWorkflows(env)) {
+          const instance = await env.TEXAS_BATCH_WORKFLOW.create({
+            params: { statutesOnly: true },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'texas-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processTexasStatutes(env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -211,6 +332,26 @@ export default {
     if (url.pathname === '/pipeline/texas/tac' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting Texas TAC pipeline');
+
+        if (useWorkflows(env)) {
+          const instance = await env.TEXAS_BATCH_WORKFLOW.create({
+            params: { tacOnly: true },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'texas-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processTexasTAC(env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -245,6 +386,26 @@ export default {
 
       try {
         console.log(`[Worker] Starting pipeline for Texas ${code}`);
+
+        if (useWorkflows(env)) {
+          const instance = await env.TEXAS_CODE_WORKFLOW.create({
+            params: { codeAbbreviation: code },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'texas-code',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processTexasCode(codeConfig, env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -279,6 +440,26 @@ export default {
 
       try {
         console.log(`[Worker] Starting pipeline for TAC Title ${titleNumber}`);
+
+        if (useWorkflows(env)) {
+          const instance = await env.TEXAS_TAC_WORKFLOW.create({
+            params: { tacTitleNumber: titleNumber },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'texas-tac',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processTexasTACTitle(titleConfig, env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -302,6 +483,26 @@ export default {
     if (url.pathname === '/pipeline/counties' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting full county pipeline');
+
+        if (useWorkflows(env)) {
+          const instance = await env.COUNTY_BATCH_WORKFLOW.create({
+            params: {},
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'county-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processAllCounties(env);
         return new Response(JSON.stringify(result), {
           status: result.success ? 200 : 207, // 207 Multi-Status if partial success
@@ -402,6 +603,29 @@ export default {
 
       try {
         console.log(`[Worker] Starting pipeline for ${countyConfig.name} County`);
+
+        if (useWorkflows(env)) {
+          const instance = await env.COUNTY_PROCESSOR_WORKFLOW.create({
+            params: {
+              countyName: countyConfig.name,
+              fipsCode: countyConfig.fipsCode,
+            },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'county-processor',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processCounty(countyConfig, env);
         return new Response(JSON.stringify(result), {
           status: result.success ? 200 : 500,
@@ -430,6 +654,26 @@ export default {
     if (url.pathname === '/pipeline/municipal' && request.method === 'POST') {
       try {
         console.log('[Worker] Starting full municipal pipeline');
+
+        if (useWorkflows(env)) {
+          const instance = await env.MUNICIPAL_BATCH_WORKFLOW.create({
+            params: {},
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'municipal-batch',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processAllCities(env, { resumeFromCheckpoint: true });
         return new Response(JSON.stringify(result), {
           status: result.failed.length === 0 ? 200 : 207, // 207 Multi-Status if partial success
@@ -551,6 +795,26 @@ export default {
 
       try {
         console.log(`[Worker] Starting pipeline for ${city.name}`);
+
+        if (useWorkflows(env)) {
+          const instance = await env.CITY_PROCESSOR_WORKFLOW.create({
+            params: { cityId: city.cityId },
+          });
+
+          const response: WorkflowTriggerResponse = {
+            instanceId: instance.id,
+            workflowType: 'city-processor',
+            status: 'queued',
+            statusUrl: `/workflows/${instance.id}/status`,
+            triggeredAt: new Date().toISOString(),
+          };
+
+          return new Response(JSON.stringify(response), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await processSingleCity(env, city.cityId);
         return new Response(JSON.stringify(result), {
           status: 200,
@@ -752,6 +1016,156 @@ export default {
           }
         );
       }
+    }
+
+    // =========================================================================
+    // Workflow Management Endpoints
+    // =========================================================================
+
+    // GET /workflows/:id/status - Get workflow status
+    const workflowStatusMatch = url.pathname.match(/^\/workflows\/([a-f0-9-]+)\/status$/i);
+    if (workflowStatusMatch && workflowStatusMatch[1] && request.method === 'GET') {
+      const instanceId = workflowStatusMatch[1];
+
+      try {
+        // Try to get status from each workflow type (we don't know which type it is)
+        // This is a limitation - in production you'd store workflow type mapping
+        let status: any = null;
+        let workflowType = 'unknown';
+
+        // Try federal workflows first
+        try {
+          const instance = await env.FEDERAL_BATCH_WORKFLOW.get(instanceId);
+          status = await instance.status();
+          workflowType = 'federal-batch';
+        } catch {
+          try {
+            const instance = await env.FEDERAL_TITLE_WORKFLOW.get(instanceId);
+            status = await instance.status();
+            workflowType = 'federal-title';
+          } catch {
+            // Continue trying other workflow types
+          }
+        }
+
+        // Try Texas workflows
+        if (!status) {
+          try {
+            const instance = await env.TEXAS_BATCH_WORKFLOW.get(instanceId);
+            status = await instance.status();
+            workflowType = 'texas-batch';
+          } catch {
+            try {
+              const instance = await env.TEXAS_CODE_WORKFLOW.get(instanceId);
+              status = await instance.status();
+              workflowType = 'texas-code';
+            } catch {
+              try {
+                const instance = await env.TEXAS_TAC_WORKFLOW.get(instanceId);
+                status = await instance.status();
+                workflowType = 'texas-tac';
+              } catch {
+                // Continue trying other workflow types
+              }
+            }
+          }
+        }
+
+        // Try county workflows
+        if (!status) {
+          try {
+            const instance = await env.COUNTY_BATCH_WORKFLOW.get(instanceId);
+            status = await instance.status();
+            workflowType = 'county-batch';
+          } catch {
+            try {
+              const instance = await env.COUNTY_PROCESSOR_WORKFLOW.get(instanceId);
+              status = await instance.status();
+              workflowType = 'county-processor';
+            } catch {
+              // Continue trying other workflow types
+            }
+          }
+        }
+
+        // Try municipal workflows
+        if (!status) {
+          try {
+            const instance = await env.MUNICIPAL_BATCH_WORKFLOW.get(instanceId);
+            status = await instance.status();
+            workflowType = 'municipal-batch';
+          } catch {
+            try {
+              const instance = await env.CITY_PROCESSOR_WORKFLOW.get(instanceId);
+              status = await instance.status();
+              workflowType = 'city-processor';
+            } catch {
+              // Not found in any workflow type
+            }
+          }
+        }
+
+        if (!status) {
+          return new Response(
+            JSON.stringify({ error: `Workflow not found: ${instanceId}` }),
+            { status: 404, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const response: WorkflowStatusResponse = {
+          instanceId,
+          workflowType,
+          status: status.status,
+          output: status.output,
+          error: status.error ? {
+            name: status.error.name || 'Error',
+            message: status.error.message || 'Unknown error',
+          } : undefined,
+        };
+
+        return new Response(JSON.stringify(response), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error(`[Worker] Failed to get workflow status:`, error);
+        return new Response(
+          JSON.stringify({
+            error: 'Failed to get workflow status',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /workflows/:id/pause - Pause workflow (not yet implemented)
+    const workflowPauseMatch = url.pathname.match(/^\/workflows\/([a-f0-9-]+)\/pause$/i);
+    if (workflowPauseMatch && request.method === 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Pause not yet implemented' }),
+        { status: 501, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // POST /workflows/:id/resume - Resume workflow (not yet implemented)
+    const workflowResumeMatch = url.pathname.match(/^\/workflows\/([a-f0-9-]+)\/resume$/i);
+    if (workflowResumeMatch && request.method === 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Resume not yet implemented' }),
+        { status: 501, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // POST /workflows/:id/cancel - Cancel workflow (not yet implemented)
+    const workflowCancelMatch = url.pathname.match(/^\/workflows\/([a-f0-9-]+)\/cancel$/i);
+    if (workflowCancelMatch && request.method === 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Cancel not yet implemented' }),
+        { status: 501, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     // Default 404 response

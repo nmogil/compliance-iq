@@ -1,3 +1,5 @@
+"use node";
+
 /**
  * Query Embedding Generation
  *
