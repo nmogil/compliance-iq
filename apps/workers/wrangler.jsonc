@@ -72,6 +72,12 @@
   //   wrangler secret put PINECONE_API_KEY
   //   wrangler secret put CONVEX_URL
 
+  // Cron triggers for scheduled tasks
+  // Weekly cache refresh for federal CFR data (Monday 2am UTC)
+  "triggers": {
+    "crons": ["0 2 * * 1"]
+  },
+
   // Local development settings
   "dev": {
     "port": 8787

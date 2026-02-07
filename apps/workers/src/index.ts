@@ -1,5 +1,13 @@
 import type { Env } from './types';
-import { processCFRTitle, processAllFederalTitles, TARGET_TITLES } from './federal';
+// Import lightweight modules directly
+import { TARGET_TITLES } from './federal/types';
+import {
+  getCacheStatus,
+  refreshCFRCache,
+  refreshCFRTitle as refreshCFRTitleCache,
+} from './federal/cache';
+// Note: processCFRTitle and processAllFederalTitles are dynamically imported
+// to avoid loading heavy dependencies (tiktoken, OpenAI SDK) at startup
 import {
   processTexasStatutes,
   processTexasTAC,
@@ -75,6 +83,10 @@ export default {
           endpoints: [
             'GET /health - Health check',
             'GET /documents - List R2 documents',
+            // Cache endpoints (pre-process CFR data for workflows)
+            'GET /cache/federal/status - Get cache manifest and freshness info',
+            'POST /cache/federal/refresh - Refresh cache for all 7 CFR titles',
+            'POST /cache/federal/refresh/:title - Refresh cache for single title',
             // Pipeline endpoints (now async when workflows enabled)
             'POST /pipeline/federal - Trigger full federal pipeline (7 titles)',
             'POST /pipeline/federal/:title - Trigger single CFR title pipeline',
@@ -141,6 +153,86 @@ export default {
       }
     }
 
+    // =========================================================================
+    // Cache Endpoints (Pre-process CFR data for workflows)
+    // =========================================================================
+
+    // GET /cache/federal/status - Get cache status and freshness info
+    if (url.pathname === '/cache/federal/status' && request.method === 'GET') {
+      try {
+        console.log('[Worker] Getting cache status');
+        const status = await getCacheStatus(env.DOCUMENTS_BUCKET);
+
+        return new Response(JSON.stringify(status, null, 2), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Cache status check failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Cache status check failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /cache/federal/refresh - Refresh cache for all titles
+    if (url.pathname === '/cache/federal/refresh' && request.method === 'POST') {
+      try {
+        console.log('[Worker] Starting full cache refresh');
+        const result = await refreshCFRCache(env.DOCUMENTS_BUCKET);
+
+        return new Response(JSON.stringify(result, null, 2), {
+          status: result.success ? 200 : 207,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('[Worker] Cache refresh failed:', error);
+        return new Response(
+          JSON.stringify({
+            error: 'Cache refresh failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
+    // POST /cache/federal/refresh/:title - Refresh cache for single title
+    const cacheRefreshMatch = url.pathname.match(/^\/cache\/federal\/refresh\/(\d+)$/);
+    if (cacheRefreshMatch && cacheRefreshMatch[1] && request.method === 'POST') {
+      const titleNumber = parseInt(cacheRefreshMatch[1], 10);
+      try {
+        console.log(`[Worker] Refreshing cache for title ${titleNumber}`);
+        const result = await refreshCFRTitleCache(env.DOCUMENTS_BUCKET, titleNumber);
+
+        return new Response(JSON.stringify(result, null, 2), {
+          status: result.success ? 200 : 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error(`[Worker] Cache refresh failed for title ${titleNumber}:`, error);
+        return new Response(
+          JSON.stringify({
+            error: 'Cache refresh failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
     // POST /pipeline/federal - Trigger full federal data pipeline
     if (url.pathname === '/pipeline/federal' && request.method === 'POST') {
       try {
@@ -166,7 +258,8 @@ export default {
           });
         }
 
-        // Legacy synchronous processing
+        // Legacy synchronous processing (dynamically import to avoid loading tiktoken at startup)
+        const { processAllFederalTitles } = await import('./federal/pipeline');
         const result = await processAllFederalTitles(env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -222,7 +315,8 @@ export default {
           });
         }
 
-        // Legacy synchronous processing
+        // Legacy synchronous processing (dynamically import to avoid loading tiktoken at startup)
+        const { processCFRTitle } = await import('./federal/pipeline');
         const result = await processCFRTitle(titleNumber, env);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' },
@@ -1170,5 +1264,32 @@ export default {
 
     // Default 404 response
     return new Response('Not found', { status: 404 });
+  },
+
+  /**
+   * Scheduled handler for cron-triggered cache refresh
+   * Runs weekly (Monday 2am UTC) to keep federal CFR cache fresh
+   */
+  async scheduled(
+    _event: ScheduledEvent,
+    env: Env,
+    _ctx: ExecutionContext
+  ): Promise<void> {
+    console.log('[Worker] Scheduled cache refresh triggered');
+
+    try {
+      const result = await refreshCFRCache(env.DOCUMENTS_BUCKET);
+
+      if (result.success) {
+        console.log(
+          `[Worker] Scheduled refresh complete: ${result.titlesProcessed} titles, ` +
+          `${result.partsProcessed} parts, ${result.sectionsProcessed} sections`
+        );
+      } else {
+        console.error('[Worker] Scheduled refresh had errors:', result.errors);
+      }
+    } catch (error) {
+      console.error('[Worker] Scheduled refresh failed:', error);
+    }
   },
 };

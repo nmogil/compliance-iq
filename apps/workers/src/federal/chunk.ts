@@ -7,7 +7,9 @@
  */
 
 import type { CFRSection, CFRPart, CFRChunk } from './types';
-import { countTokens } from '../lib/tokens';
+// Use simple token estimation to avoid CPU-intensive tiktoken initialization
+// This makes workflows compatible with Cloudflare's CPU limits
+import { countTokens } from '../lib/tokens-simple';
 import {
   generateCFRCitation,
   generateECFRUrl,

@@ -29,9 +29,10 @@ export function generateCFRCitation(
   section: string,
   subsection?: string
 ): string {
-  // Validate section format (should be numeric.numeric)
-  if (!/^\d+\.\d+$/.test(section)) {
-    throw new Error(`Invalid section format: ${section}. Expected format: "123.456"`);
+  // Validate section format - flexible to handle CFR variations
+  // Examples: "117.3", "4.32a", "123.456b", "5.4-5.6" (ranges), "4.22b-1"
+  if (!/^\d+\.\d+[a-z0-9\-\.]*$/i.test(section)) {
+    throw new Error(`Invalid section format: ${section}. Expected format like "123.456", "123.456a", or "5.4-5.6"`);
   }
 
   // Build base citation
@@ -121,10 +122,11 @@ export function parseSection(sectionString: string): {
   part: number;
   section: string;
 } {
-  // Validate format
-  if (!/^\d+\.\d+$/.test(sectionString)) {
+  // Validate format - flexible to handle CFR variations
+  // Examples: "117.3", "4.32a", "123.456b", "5.4-5.6" (ranges), "4.22b-1"
+  if (!/^\d+\.\d+[a-z0-9\-\.]*$/i.test(sectionString)) {
     throw new Error(
-      `Invalid section format: ${sectionString}. Expected format: "123.456"`
+      `Invalid section format: ${sectionString}. Expected format like "123.456", "123.456a", or "5.4-5.6"`
     );
   }
 

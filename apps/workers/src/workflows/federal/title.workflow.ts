@@ -2,11 +2,13 @@
  * FederalTitleWorkflow
  *
  * Worker workflow that processes a single CFR title through the full pipeline:
- * 1. Fetch XML from eCFR API
- * 2. Parse XML into parts/sections
- * 3. Chunk sections for embedding
- * 4. Generate embeddings in batches
- * 5. Upsert vectors to Pinecone in batches
+ * 1. Read pre-parsed data from R2 cache (avoids CPU-intensive XML parsing)
+ * 2. Chunk sections for embedding
+ * 3. Generate embeddings in batches
+ * 4. Upsert vectors to Pinecone in batches
+ *
+ * IMPORTANT: This workflow requires pre-cached CFR data in R2.
+ * Run `POST /cache/federal/refresh/:title` before triggering the workflow.
  *
  * Uses R2 for intermediate state to stay under 1 MiB step return limit.
  */
@@ -27,13 +29,13 @@ import {
   getUpsertBatchCount,
   EMBED_BATCH_SIZE,
   UPSERT_BATCH_SIZE,
-} from '../utils/step-helpers';
+} from '../utils/constants';
 import { createStateManager } from '../utils/state-manager';
-import { fetchCFRTitleStructure, fetchCFRPart, parseCFRXML } from '../../federal/fetch';
-import { chunkCFRPart } from '../../federal/chunk';
+import { getCachedPart, getTitleManifest } from '../../federal/cache-read';
 import { getCategoriesForTitle } from '../../federal/types';
 import type { CFRPart, CFRSection } from '../../federal/types';
-import type { RecordMetadata } from '@pinecone-database/pinecone';
+// Note: chunkCFRPart, OpenAI, and Pinecone are dynamically imported
+// to avoid loading heavy dependencies at startup (prevents CPU limit)
 
 /**
  * FederalTitleWorkflow - Process a single CFR title
@@ -70,37 +72,41 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
 
     try {
       // ========================================================================
-      // Step 1: Get title structure (part list)
+      // Step 1: Get title structure (from cache manifest or API)
       // ========================================================================
       const structureResult = await step.do(
         'get-structure',
         { retries: { limit: 3, backoff: 'exponential', delay: 1000 } },
         async () => {
           console.log(`[FederalTitleWorkflow] Getting structure for title ${titleNumber}`);
-          const structure = await fetchCFRTitleStructure(titleNumber);
 
-          // Store part list in R2
-          await state.put('structure', structure);
+          // Get parts list from cache manifest (required)
+          const manifest = await getTitleManifest(this.env.DOCUMENTS_BUCKET, titleNumber);
+          if (!manifest || manifest.parts.length === 0) {
+            throw new Error(
+              `No cached data for title ${titleNumber}. ` +
+              `Run POST /cache/federal/refresh/${titleNumber} first.`
+            );
+          }
+
+          console.log(`[FederalTitleWorkflow] Using cached manifest (${manifest.parts.length} parts)`);
+          const parts = manifest.parts.map(p => p.partNumber);
+          await state.put('structure', { parts });
 
           return {
-            partsCount: structure.parts.length,
-            parts: structure.parts,
+            partsCount: parts.length,
+            parts,
+            titleName: manifest.titleName,
           };
         }
       );
 
       console.log(
-        `[FederalTitleWorkflow] Found ${structureResult.partsCount} parts in title ${titleNumber}`
+        `[FederalTitleWorkflow] Found ${structureResult.partsCount} parts in title ${titleNumber} (from cache)`
       );
 
-      // NOTE: Cloudflare Workflows have strict CPU limits that may cause XML parsing
-      // to fail for larger parts. If this is an issue, consider:
-      // 1. Using Cloudflare Queues for CPU-intensive work
-      // 2. Offloading parsing to an external service
-      // 3. Using regex-based extraction instead of full XML parsing
-
       // ========================================================================
-      // Step 2: Process each part (fetch, parse, chunk) in separate steps
+      // Step 2: Process each part from cache (no XML parsing - avoids CPU limits)
       // Store chunks to R2 within each step to avoid 1 MiB return limit
       // ========================================================================
       let totalChunks = 0;
@@ -109,74 +115,77 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
       for (let partIdx = 0; partIdx < structureResult.parts.length; partIdx++) {
         const partNumber = structureResult.parts[partIdx]!;
 
-        // Process each part in its own step (smaller XML, less CPU)
-        // Store chunks directly to R2 within step to avoid return limit
+        // Process each part in its own step
+        // Read from R2 cache instead of parsing XML (avoids CPU limits)
         const partResult = await step.do(
           `process-part-${partNumber}`,
           { retries: { limit: 3, backoff: 'exponential', delay: 1000 } },
           async () => {
-            console.log(`[FederalTitleWorkflow] Processing part ${partNumber}`);
+            console.log(`[FederalTitleWorkflow] Processing part ${partNumber} from cache`);
 
-            // Fetch part XML (smaller than full title)
-            const xml = await fetchCFRPart(titleNumber, partNumber);
+            // Read pre-parsed data from cache
+            const cached = await getCachedPart(
+              this.env.DOCUMENTS_BUCKET,
+              titleNumber,
+              partNumber
+            );
 
-            // Parse XML into structured format
-            const parsed = parseCFRXML(xml);
+            if (!cached) {
+              throw new Error(
+                `Cache miss: title ${titleNumber} part ${partNumber}. ` +
+                `Run POST /cache/federal/refresh/${titleNumber} first.`
+              );
+            }
 
             // Get category for this title
             const categories = getCategoriesForTitle(titleNumber);
             const category = categories[0];
 
-            // Chunk all sections in this part
+            // Use cached sections directly (already in correct format)
+            const sections: CFRSection[] = cached.sections;
+            const sectionsCount = sections.length;
+
+            const part: CFRPart = {
+              number: cached.partNumber,
+              name: cached.partName,
+              sections,
+            };
+
+            // Dynamically import chunkCFRPart to avoid loading tiktoken at startup
+            const { chunkCFRPart } = await import('../../federal/chunk');
+
+            // Generate chunks for this part
+            const chunks = chunkCFRPart(part, {
+              titleNumber,
+              titleName: cached.titleName,
+              chapter: 'I',
+              category,
+            });
+
+            // Convert to storage format with metadata (filter empty chunks)
             const partChunks: StoredChunks['chunks'] = [];
-            let sectionsCount = 0;
-
-            for (const parsedPart of parsed.parts) {
-              // Convert parsed sections to expected format
-              const sections: CFRSection[] = parsedPart.sections.map((s) => ({
-                number: s.number,
-                title: s.heading,
-                text: s.text,
-                subsections: s.subsections,
-                effectiveDate: s.effectiveDate,
-                lastAmended: s.lastAmended,
-              }));
-
-              sectionsCount += sections.length;
-
-              const part: CFRPart = {
-                number: parsedPart.number,
-                name: parsedPart.name,
-                sections,
-              };
-
-              // Generate chunks for this part
-              const chunks = chunkCFRPart(part, {
-                titleNumber,
-                titleName: parsed.name,
-                chapter: 'I',
-                category,
-              });
-
-              // Convert to storage format with metadata
-              for (const chunk of chunks) {
-                partChunks.push({
-                  chunkId: chunk.chunkId,
-                  text: chunk.text,
-                  metadata: {
-                    chunkId: chunk.chunkId,
-                    sourceId: chunk.sourceId,
-                    sourceType: 'federal',
-                    jurisdiction: 'US',
-                    text: chunk.text,
-                    citation: chunk.citation,
-                    chunkIndex: chunk.chunkIndex,
-                    totalChunks: chunk.totalChunks,
-                    ...(chunk.category ? { category: chunk.category } : {}),
-                    indexedAt: new Date().toISOString(),
-                  },
-                });
+            for (const chunk of chunks) {
+              // Skip chunks with empty text (OpenAI won't embed them)
+              if (!chunk.text || chunk.text.trim().length === 0) {
+                console.warn(`[FederalTitleWorkflow] Skipping empty chunk: ${chunk.chunkId}`);
+                continue;
               }
+              partChunks.push({
+                chunkId: chunk.chunkId,
+                text: chunk.text,
+                metadata: {
+                  chunkId: chunk.chunkId,
+                  sourceId: chunk.sourceId,
+                  sourceType: 'federal',
+                  jurisdiction: 'US',
+                  text: chunk.text,
+                  citation: chunk.citation,
+                  chunkIndex: chunk.chunkIndex,
+                  totalChunks: chunk.totalChunks,
+                  ...(chunk.category ? { category: chunk.category } : {}),
+                  indexedAt: new Date().toISOString(),
+                },
+              });
             }
 
             // Store chunks for this part in R2 (avoid 1 MiB return limit)
@@ -186,7 +195,7 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
             });
 
             console.log(
-              `[FederalTitleWorkflow] Part ${partNumber}: ${sectionsCount} sections, ${partChunks.length} chunks`
+              `[FederalTitleWorkflow] Part ${partNumber}: ${sectionsCount} sections, ${partChunks.length} chunks (from cache)`
             );
 
             // Return only counts, not the full chunk array
@@ -257,12 +266,19 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
 
             if (batchChunks.length === 0) return 0;
 
+            // Filter out chunks with empty text (OpenAI rejects empty strings)
+            const validChunks = batchChunks.filter(c => c.text && c.text.trim().length > 0);
+            if (validChunks.length === 0) {
+              console.warn(`[FederalTitleWorkflow] Embed batch ${i}: all chunks empty, skipping`);
+              return 0;
+            }
+
             // Import OpenAI dynamically to avoid initialization issues
             const { default: OpenAI } = await import('openai');
             const openai = new OpenAI({ apiKey: this.env.OPENAI_API_KEY });
 
             // Generate embeddings
-            const texts = batchChunks.map((c) => c.text);
+            const texts = validChunks.map((c) => c.text);
             const response = await openai.embeddings.create({
               model: 'text-embedding-3-large',
               input: texts,
@@ -271,7 +287,7 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
 
             // Store embeddings
             const embeddings = response.data.map((d, idx) => ({
-              chunkId: batchChunks[idx]!.chunkId,
+              chunkId: validChunks[idx]!.chunkId,
               values: d.embedding,
             }));
 
@@ -343,7 +359,7 @@ export class FederalTitleWorkflow extends WorkflowEntrypoint<
               return {
                 id: chunk.chunkId,
                 values,
-                metadata: chunk.metadata as RecordMetadata,
+                metadata: chunk.metadata as Record<string, unknown>,
               };
             });
 

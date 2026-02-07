@@ -20,6 +20,25 @@ export { chunkCFRSection, chunkCFRPart } from './chunk';
 // Embedding
 export { embedChunks, generateEmbeddings } from './embed';
 
+// Cache (pre-processed CFR data for workflows)
+export {
+  getCacheManifest,
+  getTitleManifest,
+  getCachedPart,
+  getCacheStatus,
+  refreshCFRCache,
+  refreshCFRTitle,
+  computeXMLHash,
+  isCacheValid,
+} from './cache';
+export type {
+  CachedCFRPart,
+  CacheManifest,
+  TitleManifest,
+  CacheRefreshResult,
+  TitleRefreshResult,
+} from './cache';
+
 // Pipeline orchestration
 export { processCFRTitle, processAllFederalTitles } from './pipeline';
 export type { PipelineResult, BatchPipelineResult } from './pipeline';

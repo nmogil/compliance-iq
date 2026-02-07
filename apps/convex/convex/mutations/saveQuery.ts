@@ -73,21 +73,15 @@ export const saveQueryResult = internalMutation({
     });
 
     // Save assistant response as message
-    // Note: We store simplified citations in the message format
-    const messageCitations = args.citations.map((c) => ({
-      sourceId: '0'.repeat(32) as any, // Placeholder - we don't have source IDs yet
-      sectionNumber: c.citation,
-      title: c.text.substring(0, 100),
-      url: c.url ?? '',
-      relevanceScore: undefined,
-    }));
-
+    // Note: We skip citations for now since we don't have Convex source IDs mapped
+    // to Pinecone chunk IDs. The citations are stored in the raw answerContent.
+    // TODO: Add source ID mapping when we implement source tracking in Phase 8
     const messageId = await ctx.db.insert('messages', {
       conversationId,
       role: 'assistant',
       content: args.answerContent,
       status: 'complete',
-      citations: messageCitations.length > 0 ? messageCitations : undefined,
+      // citations: undefined - skipping until source ID mapping is implemented
       createdAt: now,
       updatedAt: now,
     });
